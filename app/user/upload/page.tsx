@@ -1,72 +1,83 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
-import { Upload, X, ImageIcon } from "lucide-react"
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { Upload, X, ImageIcon } from "lucide-react";
 
 export default function UploadPrescription() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [loading, setLoading] = useState(false)
-  const [images, setImages] = useState<File[]>([])
-  const [modalOpen, setModalOpen] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState<File[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
+    const files = Array.from(e.target.files || []);
     if (images.length + files.length > 5) {
       toast({
         title: "Too many images",
         description: "You can upload a maximum of 5 images.",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
-    setImages([...images, ...files])
-  }
+    setImages([...images, ...files]);
+  };
 
   const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index))
-  }
+    setImages(images.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (images.length === 0) {
       toast({
         title: "No images uploaded",
         description: "Please upload at least one prescription image.",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     toast({
       title: "Prescription uploaded successfully!",
-      description: "Pharmacies will review your prescription and send quotations soon.",
-    })
+      description:
+        "Pharmacies will review your prescription and send quotations soon.",
+    });
 
-    setLoading(false)
-    router.push("/user/dashboard")
-  }
+    setLoading(false);
+    router.push("/user/dashboard");
+  };
 
   return (
     <>
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Upload Prescription</h1>
-        <p className="text-gray-600 dark:text-gray-400">Upload your prescription images and delivery details</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Upload Prescription
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          Upload your prescription images and delivery details
+        </p>
       </header>
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -74,14 +85,20 @@ export default function UploadPrescription() {
           <div className="rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 mb-2">
             <div className="mb-2">
               <h2 className="text-lg font-bold">Prescription Images</h2>
-              <p className="text-sm text-gray-500">Upload up to 5 clear images of your prescription (JPG, PNG, PDF)</p>
+              <p className="text-sm text-gray-500">
+                Upload up to 5 clear images of your prescription (JPG, PNG, PDF)
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <Button type="button" onClick={() => setModalOpen(true)}>
                 Upload Images
               </Button>
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                {images.length === 0 ? "No images selected" : `${images.length} image${images.length > 1 ? "s" : ""} selected`}
+                {images.length === 0
+                  ? "No images selected"
+                  : `${images.length} image${
+                      images.length > 1 ? "s" : ""
+                    } selected`}
               </span>
             </div>
           </div>
@@ -90,7 +107,9 @@ export default function UploadPrescription() {
           <div className="rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 mb-2">
             <div className="mb-2">
               <h2 className="text-lg font-bold">Prescription Details</h2>
-              <p className="text-sm text-gray-500">Add any additional notes or special instructions</p>
+              <p className="text-sm text-gray-500">
+                Add any additional notes or special instructions
+              </p>
             </div>
             <div>
               <Label htmlFor="note">Notes (Optional)</Label>
@@ -106,7 +125,9 @@ export default function UploadPrescription() {
           <div className="rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 mb-2">
             <div className="mb-2">
               <h2 className="text-lg font-bold">Delivery Information</h2>
-              <p className="text-sm text-gray-500">Specify where and when you'd like your medications delivered</p>
+              <p className="text-sm text-gray-500">
+                Specify where and when you'd like your medications delivered
+              </p>
             </div>
             <div className="space-y-4">
               <div>
@@ -161,7 +182,11 @@ export default function UploadPrescription() {
 
           {/* Submit Button */}
           <div className="flex justify-end space-x-4">
-            <Button type="button" variant="outline" onClick={() => router.back()}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+            >
               Cancel
             </Button>
             <Button
@@ -187,7 +212,9 @@ export default function UploadPrescription() {
               <X className="w-5 h-5" />
             </button>
             <h2 className="text-lg font-bold mb-2">Upload Images</h2>
-            <p className="text-sm text-gray-500 mb-4">You can upload up to 5 images (JPG, PNG, PDF).</p>
+            <p className="text-sm text-gray-500 mb-4">
+              You can upload up to 5 images (JPG, PNG, PDF).
+            </p>
             <div className="space-y-4">
               <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
                 <input
@@ -201,18 +228,24 @@ export default function UploadPrescription() {
                 />
                 <label htmlFor="modal-file-upload" className="cursor-pointer">
                   <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-gray-900 dark:text-white">Click to upload files</p>
-                  <p className="text-sm text-gray-500">or drag and drop your prescription images here</p>
+                  <p className="text-lg font-medium text-gray-900 dark:text-white">
+                    Click to upload files
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    or drag and drop your prescription images here
+                  </p>
                 </label>
               </div>
               {images.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-32 overflow-y-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-32 overflow-y-auto mt-4">
                   {images.map((image, index) => (
                     <div key={index} className="relative group w-20 h-20">
                       <div className="bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center w-full h-full">
                         <ImageIcon className="w-8 h-8 text-gray-400" />
                       </div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate w-full">{image.name}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate w-full">
+                        {image.name}
+                      </p>
                       <button
                         type="button"
                         onClick={() => removeImage(index)}
@@ -225,7 +258,11 @@ export default function UploadPrescription() {
                 </div>
               )}
               <div className="flex justify-end gap-2 mt-4">
-                <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setModalOpen(false)}
+                >
                   Done
                 </Button>
               </div>
@@ -234,5 +271,5 @@ export default function UploadPrescription() {
         </div>
       )}
     </>
-  )
+  );
 }
