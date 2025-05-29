@@ -322,11 +322,7 @@ export default function LandingPage() {
               </Button>
             </Link>
             <Link href="/auth/signup?type=pharmacy">
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-white border-white hover:bg-white hover:text-blue-600"
-              >
+              <Button size="lg" variant="outline">
                 Partner With Us
               </Button>
             </Link>
