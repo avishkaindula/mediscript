@@ -90,9 +90,11 @@ const patients = [
   },
 ]
 
+type Patient = typeof patients[number];
+
 export default function PatientsPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedPatient, setSelectedPatient] = useState(null)
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
 
   const filteredPatients = patients.filter(
     (patient) =>
@@ -115,235 +117,222 @@ export default function PatientsPage() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="hidden md:block h-full">
-        <PharmacySidebar />
+    <>
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Patients</h1>
+        <p className="text-gray-600 dark:text-gray-400">View and manage patient information</p>
+      </header>
+      {/* Search */}
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Input
+            placeholder="Search patients by name, email, or phone..."
+            className="pl-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
-          <div className="px-6 py-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Patients</h1>
-            <p className="text-gray-600 dark:text-gray-400">View and manage patient information</p>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6">
-          {/* Search */}
-          <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <Input
-                placeholder="Search patients by name, email, or phone..."
-                className="pl-10"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Patients List */}
-          <div className="grid gap-4">
-            {filteredPatients.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No patients found</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Try adjusting your search criteria.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              filteredPatients.map((patient) => (
-                <Card key={patient.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <Avatar className="h-12 w-12">
-                          <AvatarFallback>
-                            {patient.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-semibold text-gray-900 dark:text-white">{patient.name}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-                            <div className="flex items-center">
-                              <Mail className="w-4 h-4 mr-1" />
-                              {patient.email}
-                            </div>
-                            <div className="flex items-center">
-                              <Phone className="w-4 h-4 mr-1" />
-                              {patient.phone}
-                            </div>
-                          </div>
+      {/* Patients List */}
+      <div className="grid gap-4">
+        {filteredPatients.length === 0 ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No patients found</h3>
+              <p className="text-gray-600 dark:text-gray-400">Try adjusting your search criteria.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          filteredPatients.map((patient) => (
+            <Card key={patient.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-12 w-12">
+                      <AvatarFallback>
+                        {patient.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{patient.name}</h3>
+                      <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center">
+                          <Mail className="w-4 h-4 mr-1" />
+                          {patient.email}
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="text-right">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Last Order</p>
-                          <p className="font-medium text-gray-900 dark:text-white">
-                            {new Date(patient.lastOrder).toLocaleDateString()}
-                          </p>
+                        <div className="flex items-center">
+                          <Phone className="w-4 h-4 mr-1" />
+                          {patient.phone}
                         </div>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" onClick={() => setSelectedPatient(patient)}>
-                              View Profile
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
-                            <DialogHeader>
-                              <DialogTitle>Patient Profile</DialogTitle>
-                              <DialogDescription>Detailed information about {patient.name}</DialogDescription>
-                            </DialogHeader>
-
-                            <div className="space-y-6">
-                              {/* Patient Information */}
-                              <div className="flex items-center space-x-4">
-                                <Avatar className="h-16 w-16">
-                                  <AvatarFallback className="text-lg">
-                                    {patient.name
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">{patient.name}</h2>
-                                  <p className="text-gray-600 dark:text-gray-400">Patient ID: {patient.id}</p>
-                                </div>
-                              </div>
-
-                              {/* Contact Information */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <div className="flex items-start space-x-3">
-                                  <Mail className="w-5 h-5 text-gray-500 mt-0.5" />
-                                  <div>
-                                    <p className="text-sm text-gray-500">Email</p>
-                                    <p className="font-medium">{patient.email}</p>
-                                  </div>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Phone className="w-5 h-5 text-gray-500 mt-0.5" />
-                                  <div>
-                                    <p className="text-sm text-gray-500">Phone</p>
-                                    <p className="font-medium">{patient.phone}</p>
-                                  </div>
-                                </div>
-                                <div className="flex items-start space-x-3 col-span-2">
-                                  <MapPin className="w-5 h-5 text-gray-500 mt-0.5" />
-                                  <div>
-                                    <p className="text-sm text-gray-500">Address</p>
-                                    <p className="font-medium">{patient.address}</p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Order History */}
-                              <div>
-                                <Tabs defaultValue="prescriptions">
-                                  <TabsList>
-                                    <TabsTrigger value="prescriptions">Prescription History</TabsTrigger>
-                                    <TabsTrigger value="notes">Notes</TabsTrigger>
-                                  </TabsList>
-                                  <TabsContent value="prescriptions" className="pt-4">
-                                    <Table>
-                                      <TableHeader>
-                                        <TableRow>
-                                          <TableHead>ID</TableHead>
-                                          <TableHead>Date</TableHead>
-                                          <TableHead>Items</TableHead>
-                                          <TableHead>Status</TableHead>
-                                          <TableHead className="text-right">Actions</TableHead>
-                                        </TableRow>
-                                      </TableHeader>
-                                      <TableBody>
-                                        {patient.prescriptions.map((prescription) => (
-                                          <TableRow key={prescription.id}>
-                                            <TableCell className="font-medium">#{prescription.id}</TableCell>
-                                            <TableCell>{new Date(prescription.date).toLocaleDateString()}</TableCell>
-                                            <TableCell>{prescription.items}</TableCell>
-                                            <TableCell>
-                                              <span className={getStatusColor(prescription.status)}>
-                                                {prescription.status.charAt(0).toUpperCase() +
-                                                  prescription.status.slice(1)}
-                                              </span>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                              <Button variant="outline" size="sm">
-                                                View
-                                              </Button>
-                                            </TableCell>
-                                          </TableRow>
-                                        ))}
-                                      </TableBody>
-                                    </Table>
-                                  </TabsContent>
-                                  <TabsContent value="notes" className="pt-4">
-                                    <Card>
-                                      <CardContent className="p-4">
-                                        <p className="text-gray-600 dark:text-gray-400 italic">
-                                          No notes available for this patient.
-                                        </p>
-                                      </CardContent>
-                                    </Card>
-                                  </TabsContent>
-                                </Tabs>
-                              </div>
-
-                              {/* Summary */}
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <Card>
-                                  <CardContent className="p-4">
-                                    <p className="text-sm text-gray-500">Total Orders</p>
-                                    <p className="text-xl font-bold">{patient.totalOrders}</p>
-                                  </CardContent>
-                                </Card>
-                                <Card>
-                                  <CardContent className="p-4">
-                                    <p className="text-sm text-gray-500">Last Order</p>
-                                    <p className="text-xl font-bold">
-                                      {new Date(patient.lastOrder).toLocaleDateString()}
-                                    </p>
-                                  </CardContent>
-                                </Card>
-                                <Card>
-                                  <CardContent className="p-4">
-                                    <p className="text-sm text-gray-500">Active Prescriptions</p>
-                                    <p className="text-xl font-bold">
-                                      {patient.prescriptions.filter((p) => p.status !== "completed").length}
-                                    </p>
-                                  </CardContent>
-                                </Card>
-                                <Card>
-                                  <CardContent className="p-4">
-                                    <p className="text-sm text-gray-500">Customer Since</p>
-                                    <p className="text-xl font-bold">
-                                      {new Date(
-                                        patient.prescriptions.sort(
-                                          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-                                        )[0].date,
-                                      ).toLocaleDateString()}
-                                    </p>
-                                  </CardContent>
-                                </Card>
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        </main>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Last Order</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {new Date(patient.lastOrder).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" onClick={() => setSelectedPatient(patient)}>
+                          View Profile
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
+                        <DialogHeader>
+                          <DialogTitle>Patient Profile</DialogTitle>
+                          <DialogDescription>Detailed information about {patient.name}</DialogDescription>
+                        </DialogHeader>
+
+                        <div className="space-y-6">
+                          {/* Patient Information */}
+                          <div className="flex items-center space-x-4">
+                            <Avatar className="h-16 w-16">
+                              <AvatarFallback className="text-lg">
+                                {patient.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{patient.name}</h2>
+                              <p className="text-gray-600 dark:text-gray-400">Patient ID: {patient.id}</p>
+                            </div>
+                          </div>
+
+                          {/* Contact Information */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div className="flex items-start space-x-3">
+                              <Mail className="w-5 h-5 text-gray-500 mt-0.5" />
+                              <div>
+                                <p className="text-sm text-gray-500">Email</p>
+                                <p className="font-medium">{patient.email}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-start space-x-3">
+                              <Phone className="w-5 h-5 text-gray-500 mt-0.5" />
+                              <div>
+                                <p className="text-sm text-gray-500">Phone</p>
+                                <p className="font-medium">{patient.phone}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-start space-x-3 col-span-2">
+                              <MapPin className="w-5 h-5 text-gray-500 mt-0.5" />
+                              <div>
+                                <p className="text-sm text-gray-500">Address</p>
+                                <p className="font-medium">{patient.address}</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Order History */}
+                          <div>
+                            <Tabs defaultValue="prescriptions">
+                              <TabsList>
+                                <TabsTrigger value="prescriptions">Prescription History</TabsTrigger>
+                                <TabsTrigger value="notes">Notes</TabsTrigger>
+                              </TabsList>
+                              <TabsContent value="prescriptions" className="pt-4">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead>ID</TableHead>
+                                      <TableHead>Date</TableHead>
+                                      <TableHead>Items</TableHead>
+                                      <TableHead>Status</TableHead>
+                                      <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {patient.prescriptions.map((prescription) => (
+                                      <TableRow key={prescription.id}>
+                                        <TableCell className="font-medium">#{prescription.id}</TableCell>
+                                        <TableCell>{new Date(prescription.date).toLocaleDateString()}</TableCell>
+                                        <TableCell>{prescription.items}</TableCell>
+                                        <TableCell>
+                                          <span className={getStatusColor(prescription.status)}>
+                                            {prescription.status.charAt(0).toUpperCase() +
+                                              prescription.status.slice(1)}
+                                          </span>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          <Button variant="outline" size="sm">
+                                            View
+                                          </Button>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </TabsContent>
+                              <TabsContent value="notes" className="pt-4">
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <p className="text-gray-600 dark:text-gray-400 italic">
+                                      No notes available for this patient.
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                              </TabsContent>
+                            </Tabs>
+                          </div>
+
+                          {/* Summary */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <Card>
+                              <CardContent className="p-4">
+                                <p className="text-sm text-gray-500">Total Orders</p>
+                                <p className="text-xl font-bold">{patient.totalOrders}</p>
+                              </CardContent>
+                            </Card>
+                            <Card>
+                              <CardContent className="p-4">
+                                <p className="text-sm text-gray-500">Last Order</p>
+                                <p className="text-xl font-bold">
+                                  {new Date(patient.lastOrder).toLocaleDateString()}
+                                </p>
+                              </CardContent>
+                            </Card>
+                            <Card>
+                              <CardContent className="p-4">
+                                <p className="text-sm text-gray-500">Active Prescriptions</p>
+                                <p className="text-xl font-bold">
+                                  {patient.prescriptions.filter((p) => p.status !== "completed").length}
+                                </p>
+                              </CardContent>
+                            </Card>
+                            <Card>
+                              <CardContent className="p-4">
+                                <p className="text-sm text-gray-500">Customer Since</p>
+                                <p className="text-xl font-bold">
+                                  {new Date(
+                                    patient.prescriptions.sort(
+                                      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+                                    )[0].date,
+                                  ).toLocaleDateString()}
+                                </p>
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
-    </div>
+    </>
   )
 }

@@ -113,284 +113,242 @@ export default function PharmacyDashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:block h-full">
-        <PharmacySidebar />
-      </div>
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
-          <div className="flex items-center justify-between px-4 md:px-6 py-4">
-            <div className="flex items-center space-x-4">
-              {/* Mobile Menu */}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="md:hidden">
-                    <Menu className="w-5 h-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-64 h-full">
-                  <PharmacySidebar />
-                </SheetContent>
-              </Sheet>
-
-              <div>
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Pharmacy Dashboard</h1>
-                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 hidden sm:block">
-                  Manage prescriptions and create quotations
-                </p>
+    <>
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pharmacy Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-400">Manage prescriptions and create quotations</p>
+      </header>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+        <Card>
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center">
+              <FileText className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
+              <div className="ml-3 md:ml-4">
+                <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">New Prescriptions</p>
+                <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">8</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2 md:space-x-4">
-              <Button size="icon" variant="ghost">
-                <Bell className="w-5 h-5" />
-              </Button>
-              <Avatar className="w-8 h-8 md:w-10 md:h-10">
-                <AvatarImage src="/placeholder-user.jpg" />
-                <AvatarFallback>GV</AvatarFallback>
-              </Avatar>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center">
+              <Clock className="w-6 h-6 md:w-8 md:h-8 text-yellow-600" />
+              <div className="ml-3 md:ml-4">
+                <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Pending Quotes</p>
+                <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">5</p>
+              </div>
             </div>
-          </div>
-        </header>
+          </CardContent>
+        </Card>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto p-4 md:p-6">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-            <Card>
-              <CardContent className="p-4 md:p-6">
-                <div className="flex items-center">
-                  <FileText className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
-                  <div className="ml-3 md:ml-4">
-                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">New Prescriptions</p>
-                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">8</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4 md:p-6">
-                <div className="flex items-center">
-                  <Clock className="w-6 h-6 md:w-8 md:h-8 text-yellow-600" />
-                  <div className="ml-3 md:ml-4">
-                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Pending Quotes</p>
-                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">5</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4 md:p-6">
-                <div className="flex items-center">
-                  <CheckCircle className="w-6 h-6 md:w-8 md:h-8 text-green-600" />
-                  <div className="ml-3 md:ml-4">
-                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
-                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">23</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4 md:p-6">
-                <div className="flex items-center">
-                  <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-                  <div className="ml-3 md:ml-4">
-                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Revenue</p>
-                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">$2,450</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Prescriptions List */}
-          <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Prescriptions</h2>
-              <Link href="/pharmacy/prescriptions">
-                <Button variant="outline" className="w-full sm:w-auto">
-                  <FileText className="w-4 h-4 mr-2" />
-                  View All
-                </Button>
-              </Link>
+        <Card>
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center">
+              <CheckCircle className="w-6 h-6 md:w-8 md:h-8 text-green-600" />
+              <div className="ml-3 md:ml-4">
+                <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
+                <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">23</p>
+              </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="grid gap-4">
-              {prescriptions.map((prescription) => (
-                <Card key={prescription.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
-                          <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-                            {prescription.patientName}
-                          </h3>
-                          <Badge className={getStatusColor(prescription.status)}>
-                            {prescription.status.charAt(0).toUpperCase() + prescription.status.slice(1)}
-                          </Badge>
-                          <span className="text-sm text-gray-500">
-                            {new Date(prescription.uploadDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="text-gray-900 dark:text-white mb-1 truncate">{prescription.note}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                          {prescription.images} images • Delivery: {prescription.deliveryTime}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                          {prescription.deliveryAddress} • {prescription.phone}
-                        </p>
-                      </div>
-                      <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                              <Eye className="w-4 h-4 mr-2" />
-                              View
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
-                            <DialogHeader>
-                              <DialogTitle>Prescription Details - {prescription.patientName}</DialogTitle>
-                              <DialogDescription>Review prescription and create quotation</DialogDescription>
-                            </DialogHeader>
+        <Card>
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center">
+              <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
+              <div className="ml-3 md:ml-4">
+                <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Revenue</p>
+                <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">$2,450</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      {/* Prescriptions List */}
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Prescriptions</h2>
+          <Link href="/pharmacy/prescriptions">
+            <Button variant="outline" className="w-full sm:w-auto">
+              <FileText className="w-4 h-4 mr-2" />
+              View All
+            </Button>
+          </Link>
+        </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                              {/* Prescription Images */}
-                              <div>
-                                <h3 className="font-semibold mb-4">Prescription Images</h3>
-                                <div className="space-y-4">
-                                  <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                                    <div className="text-center">
-                                      <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                                      <p className="text-sm text-gray-500">Main Prescription</p>
-                                    </div>
-                                  </div>
-                                  <div className="grid grid-cols-4 gap-2">
-                                    {Array.from({ length: prescription.images - 1 }).map((_, i) => (
-                                      <div
-                                        key={i}
-                                        className="aspect-square bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
-                                      >
-                                        <FileText className="w-6 h-6 text-gray-400" />
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
+        <div className="grid gap-4">
+          {prescriptions.map((prescription) => (
+            <Card key={prescription.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                      <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                        {prescription.patientName}
+                      </h3>
+                      <Badge className={getStatusColor(prescription.status)}>
+                        {prescription.status.charAt(0).toUpperCase() + prescription.status.slice(1)}
+                      </Badge>
+                      <span className="text-sm text-gray-500">
+                        {new Date(prescription.uploadDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-gray-900 dark:text-white mb-1 truncate">{prescription.note}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                      {prescription.images} images • Delivery: {prescription.deliveryTime}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                      {prescription.deliveryAddress} • {prescription.phone}
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                          <Eye className="w-4 h-4 mr-2" />
+                          View
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+                        <DialogHeader>
+                          <DialogTitle>Prescription Details - {prescription.patientName}</DialogTitle>
+                          <DialogDescription>Review prescription and create quotation</DialogDescription>
+                        </DialogHeader>
 
-                                <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                  <h4 className="font-medium mb-2">Patient Notes</h4>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">{prescription.note}</p>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {/* Prescription Images */}
+                          <div>
+                            <h3 className="font-semibold mb-4">Prescription Images</h3>
+                            <div className="space-y-4">
+                              <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                                <div className="text-center">
+                                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                                  <p className="text-sm text-gray-500">Main Prescription</p>
                                 </div>
                               </div>
-
-                              {/* Quotation Form */}
-                              <div>
-                                <h3 className="font-semibold mb-4">Create Quotation</h3>
-                                <div className="space-y-4">
-                                  {quotationItems.map((item, index) => (
-                                    <div key={index} className="grid grid-cols-12 gap-2 items-end">
-                                      <div className="col-span-5">
-                                        <Label htmlFor={`drug-${index}`} className="text-xs">
-                                          Drug
-                                        </Label>
-                                        <Input
-                                          id={`drug-${index}`}
-                                          placeholder="Medicine name"
-                                          value={item.drug}
-                                          onChange={(e) => updateQuotationItem(index, "drug", e.target.value)}
-                                          className="text-sm"
-                                        />
-                                      </div>
-                                      <div className="col-span-3">
-                                        <Label htmlFor={`quantity-${index}`} className="text-xs">
-                                          Quantity
-                                        </Label>
-                                        <Input
-                                          id={`quantity-${index}`}
-                                          placeholder="Qty"
-                                          value={item.quantity}
-                                          onChange={(e) => updateQuotationItem(index, "quantity", e.target.value)}
-                                          className="text-sm"
-                                        />
-                                      </div>
-                                      <div className="col-span-3">
-                                        <Label htmlFor={`price-${index}`} className="text-xs">
-                                          Amount
-                                        </Label>
-                                        <Input
-                                          id={`price-${index}`}
-                                          type="number"
-                                          step="0.01"
-                                          placeholder="0.00"
-                                          value={item.price}
-                                          onChange={(e) => updateQuotationItem(index, "price", e.target.value)}
-                                          className="text-sm"
-                                        />
-                                      </div>
-                                      <div className="col-span-1">
-                                        {quotationItems.length > 1 && (
-                                          <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => removeQuotationItem(index)}
-                                            className="h-8 w-8"
-                                          >
-                                            ×
-                                          </Button>
-                                        )}
-                                      </div>
-                                    </div>
-                                  ))}
-
-                                  <Button type="button" variant="outline" onClick={addQuotationItem} className="w-full">
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    Add Item
-                                  </Button>
-
-                                  <div className="border-t pt-4">
-                                    <div className="flex justify-between items-center text-lg font-semibold">
-                                      <span>Total:</span>
-                                      <span>${calculateTotal()}</span>
-                                    </div>
+                              <div className="grid grid-cols-4 gap-2">
+                                {Array.from({ length: prescription.images - 1 }).map((_, i) => (
+                                  <div
+                                    key={i}
+                                    className="aspect-square bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
+                                  >
+                                    <FileText className="w-6 h-6 text-gray-400" />
                                   </div>
-
-                                  <Link href={`/pharmacy/create-quote/${prescription.id}`}>
-                                    <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
-                                      <Send className="w-4 h-4 mr-2" />
-                                      Send Quotation
-                                    </Button>
-                                  </Link>
-                                </div>
+                                ))}
                               </div>
                             </div>
-                          </DialogContent>
-                        </Dialog>
 
-                        {!prescription.hasQuotation && prescription.status === "pending" && (
-                          <Link href={`/pharmacy/create-quote/${prescription.id}`} className="w-full sm:w-auto">
-                            <Button
-                              size="sm"
-                              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 w-full"
-                            >
-                              Create Quote
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </main>
+                            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                              <h4 className="font-medium mb-2">Patient Notes</h4>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">{prescription.note}</p>
+                            </div>
+                          </div>
+
+                          {/* Quotation Form */}
+                          <div>
+                            <h3 className="font-semibold mb-4">Create Quotation</h3>
+                            <div className="space-y-4">
+                              {quotationItems.map((item, index) => (
+                                <div key={index} className="grid grid-cols-12 gap-2 items-end">
+                                  <div className="col-span-5">
+                                    <Label htmlFor={`drug-${index}`} className="text-xs">
+                                      Drug
+                                    </Label>
+                                    <Input
+                                      id={`drug-${index}`}
+                                      placeholder="Medicine name"
+                                      value={item.drug}
+                                      onChange={(e) => updateQuotationItem(index, "drug", e.target.value)}
+                                      className="text-sm"
+                                    />
+                                  </div>
+                                  <div className="col-span-3">
+                                    <Label htmlFor={`quantity-${index}`} className="text-xs">
+                                      Quantity
+                                    </Label>
+                                    <Input
+                                      id={`quantity-${index}`}
+                                      placeholder="Qty"
+                                      value={item.quantity}
+                                      onChange={(e) => updateQuotationItem(index, "quantity", e.target.value)}
+                                      className="text-sm"
+                                    />
+                                  </div>
+                                  <div className="col-span-3">
+                                    <Label htmlFor={`price-${index}`} className="text-xs">
+                                      Amount
+                                    </Label>
+                                    <Input
+                                      id={`price-${index}`}
+                                      type="number"
+                                      step="0.01"
+                                      placeholder="0.00"
+                                      value={item.price}
+                                      onChange={(e) => updateQuotationItem(index, "price", e.target.value)}
+                                      className="text-sm"
+                                    />
+                                  </div>
+                                  <div className="col-span-1">
+                                    {quotationItems.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => removeQuotationItem(index)}
+                                        className="h-8 w-8"
+                                      >
+                                        ×
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+
+                              <Button type="button" variant="outline" onClick={addQuotationItem} className="w-full">
+                                <Plus className="w-4 h-4 mr-2" />
+                                Add Item
+                              </Button>
+
+                              <div className="border-t pt-4">
+                                <div className="flex justify-between items-center text-lg font-semibold">
+                                  <span>Total:</span>
+                                  <span>${calculateTotal()}</span>
+                                </div>
+                              </div>
+
+                              <Link href={`/pharmacy/create-quote/${prescription.id}`}>
+                                <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+                                  <Send className="w-4 h-4 mr-2" />
+                                  Send Quotation
+                                </Button>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+
+                    {!prescription.hasQuotation && prescription.status === "pending" && (
+                      <Link href={`/pharmacy/create-quote/${prescription.id}`} className="w-full sm:w-auto">
+                        <Button
+                          size="sm"
+                          className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 w-full"
+                        >
+                          Create Quote
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   )
 }

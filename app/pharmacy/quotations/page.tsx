@@ -138,218 +138,205 @@ export default function QuotationsPage() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="hidden md:block h-full">
-        <PharmacySidebar />
+    <>
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quotations</h1>
+        <p className="text-gray-600 dark:text-gray-400">Track and manage all quotations sent to patients</p>
+      </header>
+      {/* Filters and Search */}
+      <div className="mb-6 flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Input
+            placeholder="Search by patient name..."
+            className="pl-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="flex gap-4">
+          <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+            <SelectTrigger className="w-[180px]">
+              <div className="flex items-center gap-2">
+                <Filter size={16} />
+                <span>Filter by Status</span>
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="accepted">Accepted</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
-          <div className="px-6 py-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quotations</h1>
-            <p className="text-gray-600 dark:text-gray-400">Track and manage all quotations sent to patients</p>
-          </div>
-        </header>
+      {/* Tabs */}
+      <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
+          <TabsTrigger value="accepted">Accepted</TabsTrigger>
+          <TabsTrigger value="rejected">Rejected</TabsTrigger>
+          <TabsTrigger value="completed">Completed</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6">
-          {/* Filters and Search */}
-          <div className="mb-6 flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <Input
-                placeholder="Search by patient name..."
-                className="pl-10"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-4">
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="w-[180px]">
-                  <div className="flex items-center gap-2">
-                    <Filter size={16} />
-                    <span>Filter by Status</span>
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="accepted">Accepted</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="accepted">Accepted</TabsTrigger>
-              <TabsTrigger value="rejected">Rejected</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          {/* Quotations List */}
-          <div className="grid gap-4">
-            {filteredQuotations.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No quotations found</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Try adjusting your search or filter criteria.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              filteredQuotations.map((quotation) => (
-                <Card key={quotation.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4 mb-2">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">{quotation.patientName}</h3>
-                          <Badge className={getStatusColor(quotation.status)}>
-                            <div className="flex items-center">
-                              {getStatusIcon(quotation.status)}
-                              <span>{quotation.status.charAt(0).toUpperCase() + quotation.status.slice(1)}</span>
-                            </div>
-                          </Badge>
-                          <span className="text-sm text-gray-500">
-                            Created: {new Date(quotation.createdDate).toLocaleDateString()}
-                          </span>
+      {/* Quotations List */}
+      <div className="grid gap-4">
+        {filteredQuotations.length === 0 ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No quotations found</h3>
+              <p className="text-gray-600 dark:text-gray-400">Try adjusting your search or filter criteria.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          filteredQuotations.map((quotation) => (
+            <Card key={quotation.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-4 mb-2">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{quotation.patientName}</h3>
+                      <Badge className={getStatusColor(quotation.status)}>
+                        <div className="flex items-center">
+                          {getStatusIcon(quotation.status)}
+                          <span>{quotation.status.charAt(0).toUpperCase() + quotation.status.slice(1)}</span>
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <p className="text-gray-900 dark:text-white font-medium">${quotation.total.toFixed(2)}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {quotation.items.length} items • Expires:{" "}
-                            {new Date(quotation.expiryDate).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <Eye className="w-4 h-4 mr-2" />
-                              View Details
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl">
-                            <DialogHeader>
-                              <DialogTitle>Quotation Details</DialogTitle>
-                              <DialogDescription>
-                                Quotation #{quotation.id} for {quotation.patientName}
-                              </DialogDescription>
-                            </DialogHeader>
-
-                            <div className="space-y-6">
-                              {/* Status and Dates */}
-                              <div className="flex justify-between items-center">
-                                <Badge className={getStatusColor(quotation.status)}>
-                                  <div className="flex items-center">
-                                    {getStatusIcon(quotation.status)}
-                                    <span>{quotation.status.charAt(0).toUpperCase() + quotation.status.slice(1)}</span>
-                                  </div>
-                                </Badge>
-                                <div className="text-sm text-gray-500">
-                                  Created: {new Date(quotation.createdDate).toLocaleDateString()} | Expires:{" "}
-                                  {new Date(quotation.expiryDate).toLocaleDateString()}
-                                </div>
-                              </div>
-
-                              {/* Items */}
-                              <div>
-                                <h3 className="font-medium text-gray-900 dark:text-white mb-2">Items</h3>
-                                <div className="space-y-2">
-                                  {quotation.items.map((item, index) => (
-                                    <div
-                                      key={index}
-                                      className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
-                                    >
-                                      <div>
-                                        <p className="font-medium text-gray-900 dark:text-white">{item.drug}</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">{item.quantity}</p>
-                                      </div>
-                                      <p className="font-medium text-gray-900 dark:text-white">
-                                        ${item.amount.toFixed(2)}
-                                      </p>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* Summary */}
-                              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                                <div className="flex justify-between items-center mb-2">
-                                  <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
-                                  <span className="font-medium">
-                                    ${(quotation.total - quotation.deliveryFee).toFixed(2)}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between items-center mb-2">
-                                  <span className="text-gray-600 dark:text-gray-400">Delivery Fee</span>
-                                  <span className="font-medium">${quotation.deliveryFee.toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
-                                  <span className="font-semibold text-gray-900 dark:text-white">Total</span>
-                                  <span className="font-semibold text-gray-900 dark:text-white">
-                                    ${quotation.total.toFixed(2)}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Delivery Info */}
-                              <div>
-                                <h3 className="font-medium text-gray-900 dark:text-white mb-2">Delivery Information</h3>
-                                <p className="text-gray-600 dark:text-gray-400">
-                                  Estimated delivery time: {quotation.estimatedDelivery}
-                                </p>
-                              </div>
-
-                              {/* Status-specific information */}
-                              {quotation.status === "accepted" && (
-                                <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                                  <p className="text-green-800 dark:text-green-300 font-medium">
-                                    ✓ Quotation accepted by patient
-                                  </p>
-                                  <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                                    Prepare the order for delivery.
-                                  </p>
-                                </div>
-                              )}
-
-                              {quotation.status === "rejected" && (
-                                <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
-                                  <p className="text-red-800 dark:text-red-300 font-medium">
-                                    ✗ Quotation rejected by patient
-                                  </p>
-                                </div>
-                              )}
-
-                              {quotation.status === "completed" && (
-                                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                                  <p className="text-blue-800 dark:text-blue-300 font-medium">
-                                    ✓ Order completed and delivered
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
+                      </Badge>
+                      <span className="text-sm text-gray-500">
+                        Created: {new Date(quotation.createdDate).toLocaleDateString()}
+                      </span>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        </main>
+                    <div className="flex items-center space-x-4">
+                      <p className="text-gray-900 dark:text-white font-medium">${quotation.total.toFixed(2)}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {quotation.items.length} items • Expires:{" "}
+                        {new Date(quotation.expiryDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Details
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Quotation Details</DialogTitle>
+                          <DialogDescription>
+                            Quotation #{quotation.id} for {quotation.patientName}
+                          </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="space-y-6">
+                          {/* Status and Dates */}
+                          <div className="flex justify-between items-center">
+                            <Badge className={getStatusColor(quotation.status)}>
+                              <div className="flex items-center">
+                                {getStatusIcon(quotation.status)}
+                                <span>{quotation.status.charAt(0).toUpperCase() + quotation.status.slice(1)}</span>
+                              </div>
+                            </Badge>
+                            <div className="text-sm text-gray-500">
+                              Created: {new Date(quotation.createdDate).toLocaleDateString()} | Expires:{" "}
+                              {new Date(quotation.expiryDate).toLocaleDateString()}
+                            </div>
+                          </div>
+
+                          {/* Items */}
+                          <div>
+                            <h3 className="font-medium text-gray-900 dark:text-white mb-2">Items</h3>
+                            <div className="space-y-2">
+                              {quotation.items.map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
+                                >
+                                  <div>
+                                    <p className="font-medium text-gray-900 dark:text-white">{item.drug}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">{item.quantity}</p>
+                                  </div>
+                                  <p className="font-medium text-gray-900 dark:text-white">
+                                    ${item.amount.toFixed(2)}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Summary */}
+                          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                              <span className="font-medium">
+                                ${(quotation.total - quotation.deliveryFee).toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-gray-600 dark:text-gray-400">Delivery Fee</span>
+                              <span className="font-medium">${quotation.deliveryFee.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
+                              <span className="font-semibold text-gray-900 dark:text-white">Total</span>
+                              <span className="font-semibold text-gray-900 dark:text-white">
+                                ${quotation.total.toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Delivery Info */}
+                          <div>
+                            <h3 className="font-medium text-gray-900 dark:text-white mb-2">Delivery Information</h3>
+                            <p className="text-gray-600 dark:text-gray-400">
+                              Estimated delivery time: {quotation.estimatedDelivery}
+                            </p>
+                          </div>
+
+                          {/* Status-specific information */}
+                          {quotation.status === "accepted" && (
+                            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                              <p className="text-green-800 dark:text-green-300 font-medium">
+                                ✓ Quotation accepted by patient
+                              </p>
+                              <p className="text-sm text-green-600 dark:text-green-400 mt-1">
+                                Prepare the order for delivery.
+                              </p>
+                            </div>
+                          )}
+
+                          {quotation.status === "rejected" && (
+                            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                              <p className="text-red-800 dark:text-red-300 font-medium">
+                                ✗ Quotation rejected by patient
+                              </p>
+                            </div>
+                          )}
+
+                          {quotation.status === "completed" && (
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                              <p className="text-blue-800 dark:text-blue-300 font-medium">
+                                ✓ Order completed and delivered
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
-    </div>
+    </>
   )
 }
