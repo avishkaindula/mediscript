@@ -100,12 +100,12 @@ export default function LandingPage() {
         </div>
 
         {/* Floating Elements */}
-        <div className="absolute top-20 left-10 animate-bounce">
+        <div className="absolute top-20 left-10 animate-bounce hidden sm:block">
           <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
             <Heart className="w-8 h-8 text-blue-600" />
           </div>
         </div>
-        <div className="absolute top-40 right-10 animate-pulse">
+        <div className="absolute top-40 right-10 animate-pulse hidden sm:block">
           <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
             <Pill className="w-6 h-6 text-green-600" />
           </div>
