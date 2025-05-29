@@ -46,7 +46,7 @@ export default function SignUpPage() {
     });
 
     setLoading(false);
-    router.push("/signin");
+    router.push("/sign-in");
   };
 
   return (
@@ -152,7 +152,7 @@ export default function SignUpPage() {
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Already have an account?{" "}
-                <Link href="/signin" className="text-blue-600 hover:underline">
+                <Link href="/sign-in" className="text-blue-600 hover:underline">
                   Sign in
                 </Link>
               </p>

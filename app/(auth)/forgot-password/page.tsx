@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center mb-8">
-          <Link href="/signin" className="flex items-center space-x-2">
+          <Link href="/sign-in" className="flex items-center space-x-2">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-4 h-4" />
             </Button>
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
                   password reset link.
                 </p>
                 <Button asChild className="w-full">
-                  <Link href="/signin">Back to Sign In</Link>
+                  <Link href="/sign-in">Back to Sign In</Link>
                 </Button>
               </div>
             )}
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Remember your password?{" "}
-                <Link href="/signin" className="text-blue-600 hover:underline">
+                <Link href="/sign-in" className="text-blue-600 hover:underline">
                   Sign in
                 </Link>
               </p>

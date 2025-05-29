@@ -42,10 +42,10 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center space-x-4">
               <ThemeToggle />
-              <Link href="/signin">
+              <Link href="/sign-in">
                 <Button variant="ghost">Sign In</Button>
               </Link>
-              <Link href="/signup">
+              <Link href="/sign-up">
                 <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
                   Get Started
                 </Button>
@@ -81,7 +81,7 @@ export default function LandingPage() {
               delivery.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/signup">
+              <Link href="/sign-up">
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
@@ -90,7 +90,7 @@ export default function LandingPage() {
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
-              <Link href="/signup?type=pharmacy">
+              <Link href="/sign-up?type=pharmacy">
                 <Button size="lg" variant="outline">
                   Join as Pharmacy
                 </Button>
@@ -315,13 +315,13 @@ export default function LandingPage() {
             needs
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup">
+            <Link href="/sign-up">
               <Button size="lg" variant="outline">
                 Get Started Today
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
-            <Link href="/signup?type=pharmacy">
+            <Link href="/sign-up?type=pharmacy">
               <Button size="lg" variant="outline">
                 Partner With Us
               </Button>
