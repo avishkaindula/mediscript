@@ -51,13 +51,13 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="flex items-center justify-center mb-8">
-          <Link href="/" className="flex items-center space-x-2">
+        <div className="relative flex items-center justify-center mb-8 min-h-[40px]">
+          <Link href="/" className="absolute left-0 flex items-center">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-4 h-4" />
             </Button>
           </Link>
-          <div className="flex items-center space-x-2 ml-4">
+          <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
               <Pill className="w-5 h-5 text-white" />
             </div>
