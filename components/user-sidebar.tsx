@@ -5,11 +5,12 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Home, Upload, FileText, User, Settings, LogOut, Pill } from "lucide-react"
+import { Home, Upload, FileText, User, Settings, LogOut, Pill, ClipboardList } from "lucide-react"
 
 const navigation = [
   { name: "Dashboard", href: "/user/dashboard", icon: Home },
   { name: "Upload Prescription", href: "/user/upload", icon: Upload },
+  { name: "Prescriptions", href: "/user/prescriptions", icon: ClipboardList },
   { name: "Quotations", href: "/user/quotations", icon: FileText },
   { name: "Profile", href: "/user/profile", icon: User },
   { name: "Settings", href: "/user/settings", icon: Settings },

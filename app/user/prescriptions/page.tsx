@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Upload, FileText, Clock, CheckCircle, Bell, Plus, Eye } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserSidebar } from "@/components/user-sidebar"
+import { FileText, Search, Filter, Eye, Clock, CheckCircle } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
+import Link from "next/link"
 
 // Dummy data
 const prescriptions = [
@@ -68,10 +70,61 @@ const prescriptions = [
       },
     ],
   },
+  {
+    id: 4,
+    uploadDate: "2024-05-20",
+    status: "completed",
+    images: 2,
+    note: "Allergy medication",
+    deliveryAddress: "123 Main St, City",
+    deliveryTime: "2:00 PM - 4:00 PM",
+    quotations: [
+      {
+        id: 3,
+        pharmacyName: "Health Plus Pharmacy",
+        total: 35.0,
+        status: "accepted",
+        items: [
+          { drug: "Cetirizine 10mg", quantity: "30 tablets", amount: 15.0 },
+          { drug: "Fluticasone Nasal Spray", quantity: "1 bottle", amount: 20.0 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 5,
+    uploadDate: "2024-05-15",
+    status: "completed",
+    images: 1,
+    note: "Monthly diabetes medication",
+    deliveryAddress: "123 Main St, City",
+    deliveryTime: "10:00 AM - 12:00 PM",
+    quotations: [
+      {
+        id: 4,
+        pharmacyName: "MediCare Pharmacy",
+        total: 120.0,
+        status: "accepted",
+        items: [
+          { drug: "Metformin 500mg", quantity: "60 tablets", amount: 40.0 },
+          { drug: "Insulin Glargine", quantity: "1 vial", amount: 80.0 },
+        ],
+      },
+    ],
+  },
 ]
 
-export default function UserDashboard() {
-  const [selectedPrescription, setSelectedPrescription] = useState(null)
+export default function PrescriptionsPage() {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedStatus, setSelectedStatus] = useState("all")
+  const [activeTab, setActiveTab] = useState("all")
+
+  const filteredPrescriptions = prescriptions.filter((prescription) => {
+    const matchesSearch = prescription.note.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesStatus = selectedStatus === "all" || prescription.status === selectedStatus
+    const matchesTab = activeTab === "all" || prescription.status === activeTab
+    return matchesSearch && matchesStatus && matchesTab
+  })
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -86,6 +139,19 @@ export default function UserDashboard() {
     }
   }
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Clock className="w-4 h-4 mr-1" />
+      case "quoted":
+        return <FileText className="w-4 h-4 mr-1" />
+      case "completed":
+        return <CheckCircle className="w-4 h-4 mr-1" />
+      default:
+        return null
+    }
+  }
+
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <UserSidebar />
@@ -93,115 +159,84 @@ export default function UserDashboard() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-              <p className="text-gray-600 dark:text-gray-400">Manage your prescriptions and quotations</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button size="icon" variant="ghost">
-                <Bell className="w-5 h-5" />
-              </Button>
-              <Avatar>
-                <AvatarImage src="/placeholder-user.jpg" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-            </div>
+          <div className="px-6 py-4">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Prescriptions</h1>
+            <p className="text-gray-600 dark:text-gray-400">View and manage all your prescription uploads</p>
           </div>
         </header>
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto p-6">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <Upload className="w-8 h-8 text-blue-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Uploads</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">12</p>
+          {/* Filters and Search */}
+          <div className="mb-6 flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <Input
+                placeholder="Search prescriptions..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-4">
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <SelectTrigger className="w-[180px]">
+                  <div className="flex items-center gap-2">
+                    <Filter size={16} />
+                    <span>Filter by Status</span>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <FileText className="w-8 h-8 text-green-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Quotations</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">8</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <Clock className="w-8 h-8 text-yellow-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">3</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <CheckCircle className="w-8 h-8 text-purple-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">5</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
-            <div className="flex space-x-4">
-              <Link href="/user/upload">
-                <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Upload Prescription
-                </Button>
-              </Link>
-              <Link href="/user/quotations">
-                <Button variant="outline">
-                  <FileText className="w-4 h-4 mr-2" />
-                  View Quotations
-                </Button>
-              </Link>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="quoted">Quoted</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          {/* Recent Prescriptions */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Prescriptions</h2>
-              <Link href="/user/prescriptions">
-                <Button variant="outline" size="sm">
-                  <Eye className="w-4 h-4 mr-2" />
-                  View All
-                </Button>
-              </Link>
-            </div>
-            <div className="grid gap-4">
-              {prescriptions.map((prescription) => (
+          {/* Tabs */}
+          <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
+            <TabsList>
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="pending">Pending</TabsTrigger>
+              <TabsTrigger value="quoted">Quoted</TabsTrigger>
+              <TabsTrigger value="completed">Completed</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {/* Quick Action */}
+          <div className="mb-6">
+            <Link href="/user/upload">
+              <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+                Upload New Prescription
+              </Button>
+            </Link>
+          </div>
+
+          {/* Prescriptions List */}
+          <div className="grid gap-4">
+            {filteredPrescriptions.length === 0 ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No prescriptions found</h3>
+                  <p className="text-gray-600 dark:text-gray-400">Try adjusting your search or filter criteria.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              filteredPrescriptions.map((prescription) => (
                 <Card key={prescription.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4 mb-2">
                           <Badge className={getStatusColor(prescription.status)}>
-                            {prescription.status.charAt(0).toUpperCase() + prescription.status.slice(1)}
+                            <div className="flex items-center">
+                              {getStatusIcon(prescription.status)}
+                              <span>{prescription.status.charAt(0).toUpperCase() + prescription.status.slice(1)}</span>
+                            </div>
                           </Badge>
                           <span className="text-sm text-gray-500">
                             Uploaded on {new Date(prescription.uploadDate).toLocaleDateString()}
@@ -222,6 +257,7 @@ export default function UserDashboard() {
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4 mr-2" />
                               View Details
                             </Button>
                           </DialogTrigger>
@@ -336,6 +372,11 @@ export default function UserDashboard() {
                                     Cancel Prescription
                                   </Button>
                                 )}
+                                {prescription.quotations.length > 0 && (
+                                  <Link href="/user/quotations">
+                                    <Button size="sm">View All Quotations</Button>
+                                  </Link>
+                                )}
                               </div>
                             </div>
                           </DialogContent>
@@ -350,8 +391,8 @@ export default function UserDashboard() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+              ))
+            )}
           </div>
         </main>
       </div>

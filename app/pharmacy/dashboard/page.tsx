@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
+import Link from "next/link"
 
 // Dummy data
 const prescriptions = [
@@ -325,27 +326,27 @@ export default function PharmacyDashboard() {
                                     </div>
                                   </div>
 
-                                  <Button
-                                    onClick={sendQuotation}
-                                    className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-                                  >
-                                    <Send className="w-4 h-4 mr-2" />
-                                    Send Quotation
-                                  </Button>
+                                  <Link href={`/pharmacy/create-quote/${prescription.id}`}>
+                                    <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+                                      <Send className="w-4 h-4 mr-2" />
+                                      Send Quotation
+                                    </Button>
+                                  </Link>
                                 </div>
                               </div>
                             </div>
                           </DialogContent>
                         </Dialog>
 
-                        {!prescription.hasQuotation && (
-                          <Button
-                            size="sm"
-                            onClick={() => setSelectedPrescription(prescription)}
-                            className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-                          >
-                            Create Quote
-                          </Button>
+                        {!prescription.hasQuotation && prescription.status === "pending" && (
+                          <Link href={`/pharmacy/create-quote/${prescription.id}`}>
+                            <Button
+                              size="sm"
+                              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+                            >
+                              Create Quote
+                            </Button>
+                          </Link>
                         )}
                       </div>
                     </div>
