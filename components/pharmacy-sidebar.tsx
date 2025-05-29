@@ -1,11 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Home, FileText, Users, BarChart3, Settings, LogOut, Pill } from "lucide-react"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import { VisuallyHidden } from "@/components/ui/visually-hidden"
+import { Home, FileText, Users, BarChart3, Settings, LogOut, Pill, Menu } from "lucide-react"
 
 const navigation = [
   { name: "Dashboard", href: "/pharmacy/dashboard", icon: Home },
@@ -15,9 +18,8 @@ const navigation = [
   { name: "Settings", href: "/pharmacy/settings", icon: Settings },
 ]
 
-export function PharmacySidebar() {
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
-
   return (
     <div className="flex flex-col w-64 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
       {/* Logo */}
@@ -29,7 +31,6 @@ export function PharmacySidebar() {
           MediScript
         </span>
       </div>
-
       {/* Navigation */}
       <nav className="flex-grow p-4 space-y-2">
         {navigation.map((item) => (
@@ -42,13 +43,13 @@ export function PharmacySidebar() {
                 ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
                 : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700",
             )}
+            onClick={onNavigate}
           >
             <item.icon className="w-5 h-5" />
             <span>{item.name}</span>
           </Link>
         ))}
       </nav>
-
       {/* Footer */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
         <div className="flex items-center justify-between">
@@ -64,5 +65,33 @@ export function PharmacySidebar() {
         </Button>
       </div>
     </div>
+  )
+}
+
+export function PharmacySidebar() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      {/* Mobile: Hamburger + Sheet */}
+      <div className="md:hidden">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="w-5 h-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64 h-full">
+            <VisuallyHidden>
+              <SheetTitle>Sidebar Navigation</SheetTitle>
+            </VisuallyHidden>
+            <SidebarContent onNavigate={() => setOpen(false)} />
+          </SheetContent>
+        </Sheet>
+      </div>
+      {/* Desktop: Static sidebar */}
+      <div className="hidden md:block h-full">
+        <SidebarContent />
+      </div>
+    </>
   )
 }
