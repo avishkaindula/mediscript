@@ -20,7 +20,7 @@ export function UserSidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="flex flex-col w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+    <div className="flex flex-col w-64 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
       {/* Logo */}
       <div className="flex items-center space-x-2 p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
@@ -32,7 +32,7 @@ export function UserSidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-grow p-4 space-y-2">
         {navigation.map((item) => (
           <Link
             key={item.name}

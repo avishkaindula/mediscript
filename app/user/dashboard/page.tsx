@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Upload, FileText, Clock, CheckCircle, Bell, Plus, Eye } from "lucide-react"
+import { Upload, FileText, Clock, CheckCircle, Bell, Plus, Eye, Menu } from "lucide-react"
 import { UserSidebar } from "@/components/user-sidebar"
 import {
   Dialog,
@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 // Dummy data
 const prescriptions = [
@@ -88,21 +89,40 @@ export default function UserDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <UserSidebar />
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block h-full">
+        <UserSidebar />
+      </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-              <p className="text-gray-600 dark:text-gray-400">Manage your prescriptions and quotations</p>
-            </div>
+          <div className="flex items-center justify-between px-4 md:px-6 py-4">
             <div className="flex items-center space-x-4">
+              {/* Mobile Menu */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:hidden">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-64 h-full">
+                  <UserSidebar />
+                </SheetContent>
+              </Sheet>
+
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 hidden sm:block">
+                  Manage your prescriptions and quotations
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 md:space-x-4">
               <Button size="icon" variant="ghost">
                 <Bell className="w-5 h-5" />
               </Button>
-              <Avatar>
+              <Avatar className="w-8 h-8 md:w-10 md:h-10">
                 <AvatarImage src="/placeholder-user.jpg" />
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
@@ -111,52 +131,52 @@ export default function UserDashboard() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-4 md:p-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center">
-                  <Upload className="w-8 h-8 text-blue-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Uploads</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">12</p>
+                  <Upload className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
+                  <div className="ml-3 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Total Uploads</p>
+                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">12</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center">
-                  <FileText className="w-8 h-8 text-green-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Quotations</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">8</p>
+                  <FileText className="w-6 h-6 md:w-8 md:h-8 text-green-600" />
+                  <div className="ml-3 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Quotations</p>
+                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">8</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center">
-                  <Clock className="w-8 h-8 text-yellow-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">3</p>
+                  <Clock className="w-6 h-6 md:w-8 md:h-8 text-yellow-600" />
+                  <div className="ml-3 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
+                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">3</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center">
-                  <CheckCircle className="w-8 h-8 text-purple-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">5</p>
+                  <CheckCircle className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
+                  <div className="ml-3 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
+                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">5</p>
                   </div>
                 </div>
               </CardContent>
@@ -164,17 +184,17 @@ export default function UserDashboard() {
           </div>
 
           {/* Quick Actions */}
-          <div className="mb-8">
+          <div className="mb-6 md:mb-8">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
-            <div className="flex space-x-4">
-              <Link href="/user/upload">
-                <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+              <Link href="/user/upload" className="flex-1 sm:flex-none">
+                <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 w-full sm:w-auto">
                   <Plus className="w-4 h-4 mr-2" />
                   Upload Prescription
                 </Button>
               </Link>
-              <Link href="/user/quotations">
-                <Button variant="outline">
+              <Link href="/user/quotations" className="flex-1 sm:flex-none">
+                <Button variant="outline" className="w-full sm:w-auto">
                   <FileText className="w-4 h-4 mr-2" />
                   View Quotations
                 </Button>
@@ -184,10 +204,10 @@ export default function UserDashboard() {
 
           {/* Recent Prescriptions */}
           <div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Prescriptions</h2>
               <Link href="/user/prescriptions">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
                   <Eye className="w-4 h-4 mr-2" />
                   View All
                 </Button>
@@ -196,10 +216,10 @@ export default function UserDashboard() {
             <div className="grid gap-4">
               {prescriptions.map((prescription) => (
                 <Card key={prescription.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4 mb-2">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
                           <Badge className={getStatusColor(prescription.status)}>
                             {prescription.status.charAt(0).toUpperCase() + prescription.status.slice(1)}
                           </Badge>
@@ -207,25 +227,27 @@ export default function UserDashboard() {
                             Uploaded on {new Date(prescription.uploadDate).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-gray-900 dark:text-white font-medium mb-1">{prescription.note}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-gray-900 dark:text-white font-medium mb-1 truncate">{prescription.note}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                           {prescription.images} images • Delivery: {prescription.deliveryTime}
                         </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{prescription.deliveryAddress}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                          {prescription.deliveryAddress}
+                        </p>
                         {prescription.quotations.length > 0 && (
                           <p className="text-sm text-blue-600 mt-2">
                             {prescription.quotations.length} quotation(s) received
                           </p>
                         )}
                       </div>
-                      <div className="flex space-x-2">
+                      <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" className="w-full sm:w-auto">
                               View Details
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-3xl">
+                          <DialogContent className="max-w-3xl max-h-[90vh] overflow-auto">
                             <DialogHeader>
                               <DialogTitle>Prescription Details</DialogTitle>
                               <DialogDescription>
@@ -260,7 +282,7 @@ export default function UserDashboard() {
                               {/* Prescription Details */}
                               <div>
                                 <h3 className="font-semibold mb-4">Details</h3>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <div>
                                     <p className="text-sm text-gray-500">Status</p>
                                     <Badge className={getStatusColor(prescription.status)}>
@@ -342,8 +364,10 @@ export default function UserDashboard() {
                         </Dialog>
 
                         {prescription.quotations.length > 0 && (
-                          <Link href="/user/quotations">
-                            <Button size="sm">View Quotations</Button>
+                          <Link href="/user/quotations" className="w-full sm:w-auto">
+                            <Button size="sm" className="w-full">
+                              View Quotations
+                            </Button>
                           </Link>
                         )}
                       </div>

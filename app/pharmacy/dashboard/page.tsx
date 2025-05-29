@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { FileText, Clock, CheckCircle, DollarSign, Bell, Plus, Eye, Send } from "lucide-react"
+import { FileText, Clock, CheckCircle, DollarSign, Bell, Plus, Eye, Send, Menu } from "lucide-react"
 import { PharmacySidebar } from "@/components/pharmacy-sidebar"
 import {
   Dialog,
@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 
@@ -113,21 +114,40 @@ export default function PharmacyDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <PharmacySidebar />
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block h-full">
+        <PharmacySidebar />
+      </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pharmacy Dashboard</h1>
-              <p className="text-gray-600 dark:text-gray-400">Manage prescriptions and create quotations</p>
-            </div>
+          <div className="flex items-center justify-between px-4 md:px-6 py-4">
             <div className="flex items-center space-x-4">
+              {/* Mobile Menu */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:hidden">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-64 h-full">
+                  <PharmacySidebar />
+                </SheetContent>
+              </Sheet>
+
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Pharmacy Dashboard</h1>
+                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 hidden sm:block">
+                  Manage prescriptions and create quotations
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 md:space-x-4">
               <Button size="icon" variant="ghost">
                 <Bell className="w-5 h-5" />
               </Button>
-              <Avatar>
+              <Avatar className="w-8 h-8 md:w-10 md:h-10">
                 <AvatarImage src="/placeholder-user.jpg" />
                 <AvatarFallback>GV</AvatarFallback>
               </Avatar>
@@ -136,52 +156,52 @@ export default function PharmacyDashboard() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-4 md:p-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center">
-                  <FileText className="w-8 h-8 text-blue-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">New Prescriptions</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">8</p>
+                  <FileText className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
+                  <div className="ml-3 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">New Prescriptions</p>
+                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">8</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center">
-                  <Clock className="w-8 h-8 text-yellow-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Quotes</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">5</p>
+                  <Clock className="w-6 h-6 md:w-8 md:h-8 text-yellow-600" />
+                  <div className="ml-3 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Pending Quotes</p>
+                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">5</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">23</p>
+                  <CheckCircle className="w-6 h-6 md:w-8 md:h-8 text-green-600" />
+                  <div className="ml-3 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
+                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">23</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center">
-                  <DollarSign className="w-8 h-8 text-purple-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Revenue</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">$2,450</p>
+                  <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
+                  <div className="ml-3 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Revenue</p>
+                    <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">$2,450</p>
                   </div>
                 </div>
               </CardContent>
@@ -190,22 +210,26 @@ export default function PharmacyDashboard() {
 
           {/* Prescriptions List */}
           <div>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Prescriptions</h2>
-              <Button variant="outline">
-                <FileText className="w-4 h-4 mr-2" />
-                View All
-              </Button>
+              <Link href="/pharmacy/prescriptions">
+                <Button variant="outline" className="w-full sm:w-auto">
+                  <FileText className="w-4 h-4 mr-2" />
+                  View All
+                </Button>
+              </Link>
             </div>
 
             <div className="grid gap-4">
               {prescriptions.map((prescription) => (
                 <Card key={prescription.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4 mb-2">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">{prescription.patientName}</h3>
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                          <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                            {prescription.patientName}
+                          </h3>
                           <Badge className={getStatusColor(prescription.status)}>
                             {prescription.status.charAt(0).toUpperCase() + prescription.status.slice(1)}
                           </Badge>
@@ -213,23 +237,23 @@ export default function PharmacyDashboard() {
                             {new Date(prescription.uploadDate).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-gray-900 dark:text-white mb-1">{prescription.note}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-gray-900 dark:text-white mb-1 truncate">{prescription.note}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                           {prescription.images} images • Delivery: {prescription.deliveryTime}
                         </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                           {prescription.deliveryAddress} • {prescription.phone}
                         </p>
                       </div>
-                      <div className="flex space-x-2">
+                      <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" className="w-full sm:w-auto">
                               <Eye className="w-4 h-4 mr-2" />
                               View
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
+                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
                             <DialogHeader>
                               <DialogTitle>Prescription Details - {prescription.patientName}</DialogTitle>
                               <DialogDescription>Review prescription and create quotation</DialogDescription>
@@ -271,25 +295,33 @@ export default function PharmacyDashboard() {
                                   {quotationItems.map((item, index) => (
                                     <div key={index} className="grid grid-cols-12 gap-2 items-end">
                                       <div className="col-span-5">
-                                        <Label htmlFor={`drug-${index}`}>Drug</Label>
+                                        <Label htmlFor={`drug-${index}`} className="text-xs">
+                                          Drug
+                                        </Label>
                                         <Input
                                           id={`drug-${index}`}
                                           placeholder="Medicine name"
                                           value={item.drug}
                                           onChange={(e) => updateQuotationItem(index, "drug", e.target.value)}
+                                          className="text-sm"
                                         />
                                       </div>
                                       <div className="col-span-3">
-                                        <Label htmlFor={`quantity-${index}`}>Quantity</Label>
+                                        <Label htmlFor={`quantity-${index}`} className="text-xs">
+                                          Quantity
+                                        </Label>
                                         <Input
                                           id={`quantity-${index}`}
                                           placeholder="Qty"
                                           value={item.quantity}
                                           onChange={(e) => updateQuotationItem(index, "quantity", e.target.value)}
+                                          className="text-sm"
                                         />
                                       </div>
                                       <div className="col-span-3">
-                                        <Label htmlFor={`price-${index}`}>Amount</Label>
+                                        <Label htmlFor={`price-${index}`} className="text-xs">
+                                          Amount
+                                        </Label>
                                         <Input
                                           id={`price-${index}`}
                                           type="number"
@@ -297,6 +329,7 @@ export default function PharmacyDashboard() {
                                           placeholder="0.00"
                                           value={item.price}
                                           onChange={(e) => updateQuotationItem(index, "price", e.target.value)}
+                                          className="text-sm"
                                         />
                                       </div>
                                       <div className="col-span-1">
@@ -306,6 +339,7 @@ export default function PharmacyDashboard() {
                                             variant="outline"
                                             size="icon"
                                             onClick={() => removeQuotationItem(index)}
+                                            className="h-8 w-8"
                                           >
                                             ×
                                           </Button>
@@ -339,10 +373,10 @@ export default function PharmacyDashboard() {
                         </Dialog>
 
                         {!prescription.hasQuotation && prescription.status === "pending" && (
-                          <Link href={`/pharmacy/create-quote/${prescription.id}`}>
+                          <Link href={`/pharmacy/create-quote/${prescription.id}`} className="w-full sm:w-auto">
                             <Button
                               size="sm"
-                              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+                              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 w-full"
                             >
                               Create Quote
                             </Button>

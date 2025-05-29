@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserSidebar } from "@/components/user-sidebar"
-import { FileText, Search, Filter, Eye, Clock, CheckCircle } from "lucide-react"
+import { FileText, Search, Filter, Eye, Clock, CheckCircle, Menu } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 import Link from "next/link"
 
@@ -154,19 +155,40 @@ export default function PrescriptionsPage() {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <UserSidebar />
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block h-full">
+        <UserSidebar />
+      </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
-          <div className="px-6 py-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Prescriptions</h1>
-            <p className="text-gray-600 dark:text-gray-400">View and manage all your prescription uploads</p>
+          <div className="flex items-center justify-between px-4 md:px-6 py-4">
+            <div className="flex items-center space-x-4">
+              {/* Mobile Menu */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:hidden">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-64 h-full">
+                  <UserSidebar />
+                </SheetContent>
+              </Sheet>
+
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">My Prescriptions</h1>
+                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 hidden sm:block">
+                  View and manage all your prescription uploads
+                </p>
+              </div>
+            </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-4 md:p-6">
           {/* Filters and Search */}
           <div className="mb-6 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
@@ -209,7 +231,7 @@ export default function PrescriptionsPage() {
           {/* Quick Action */}
           <div className="mb-6">
             <Link href="/user/upload">
-              <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+              <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 w-full sm:w-auto">
                 Upload New Prescription
               </Button>
             </Link>
@@ -219,7 +241,7 @@ export default function PrescriptionsPage() {
           <div className="grid gap-4">
             {filteredPrescriptions.length === 0 ? (
               <Card>
-                <CardContent className="p-12 text-center">
+                <CardContent className="p-8 md:p-12 text-center">
                   <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No prescriptions found</h3>
                   <p className="text-gray-600 dark:text-gray-400">Try adjusting your search or filter criteria.</p>
@@ -228,10 +250,10 @@ export default function PrescriptionsPage() {
             ) : (
               filteredPrescriptions.map((prescription) => (
                 <Card key={prescription.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4 mb-2">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
                           <Badge className={getStatusColor(prescription.status)}>
                             <div className="flex items-center">
                               {getStatusIcon(prescription.status)}
@@ -242,26 +264,28 @@ export default function PrescriptionsPage() {
                             Uploaded on {new Date(prescription.uploadDate).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-gray-900 dark:text-white font-medium mb-1">{prescription.note}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-gray-900 dark:text-white font-medium mb-1 truncate">{prescription.note}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                           {prescription.images} images • Delivery: {prescription.deliveryTime}
                         </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{prescription.deliveryAddress}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                          {prescription.deliveryAddress}
+                        </p>
                         {prescription.quotations.length > 0 && (
                           <p className="text-sm text-blue-600 mt-2">
                             {prescription.quotations.length} quotation(s) received
                           </p>
                         )}
                       </div>
-                      <div className="flex space-x-2">
+                      <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" className="w-full sm:w-auto">
                               <Eye className="w-4 h-4 mr-2" />
                               View Details
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-3xl">
+                          <DialogContent className="max-w-3xl max-h-[90vh] overflow-auto">
                             <DialogHeader>
                               <DialogTitle>Prescription Details</DialogTitle>
                               <DialogDescription>
@@ -296,7 +320,7 @@ export default function PrescriptionsPage() {
                               {/* Prescription Details */}
                               <div>
                                 <h3 className="font-semibold mb-4">Details</h3>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <div>
                                     <p className="text-sm text-gray-500">Status</p>
                                     <Badge className={getStatusColor(prescription.status)}>
@@ -383,8 +407,10 @@ export default function PrescriptionsPage() {
                         </Dialog>
 
                         {prescription.quotations.length > 0 && (
-                          <Link href="/user/quotations">
-                            <Button size="sm">View Quotations</Button>
+                          <Link href="/user/quotations" className="w-full sm:w-auto">
+                            <Button size="sm" className="w-full">
+                              View Quotations
+                            </Button>
                           </Link>
                         )}
                       </div>

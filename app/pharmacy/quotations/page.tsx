@@ -139,7 +139,9 @@ export default function QuotationsPage() {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <PharmacySidebar />
+      <div className="hidden md:block h-full">
+        <PharmacySidebar />
+      </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
