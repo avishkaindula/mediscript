@@ -82,13 +82,9 @@ export default function SignInPage() {
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="user@example.com or pharmacy@example.com"
+                  placeholder="user@example.com"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Use "pharmacy@example.com" for pharmacy demo or
-                  "user@example.com" for patient demo
-                </p>
               </div>
 
               <div>
