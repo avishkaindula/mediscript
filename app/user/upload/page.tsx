@@ -79,7 +79,8 @@ export default function UploadPrescription() {
           Upload your prescription images and delivery details
         </p>
       </header>
-      <div className="max-w-2xl mx-auto">
+      {/* Main profile content */}
+      <div className="max-w-2xl mx-auto space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Image Upload (Modal Trigger) */}
           <div className="rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 mb-2">
