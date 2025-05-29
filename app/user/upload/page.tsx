@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { Upload, X, ImageIcon } from "lucide-react"
@@ -72,48 +71,44 @@ export default function UploadPrescription() {
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Image Upload (Modal Trigger) */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Prescription Images</CardTitle>
-              <CardDescription>Upload up to 5 clear images of your prescription (JPG, PNG, PDF)</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <Button type="button" onClick={() => setModalOpen(true)}>
-                  Upload Images
-                </Button>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {images.length === 0 ? "No images selected" : `${images.length} image${images.length > 1 ? "s" : ""} selected`}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 mb-2">
+            <div className="mb-2">
+              <h2 className="text-lg font-bold">Prescription Images</h2>
+              <p className="text-sm text-gray-500">Upload up to 5 clear images of your prescription (JPG, PNG, PDF)</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button type="button" onClick={() => setModalOpen(true)}>
+                Upload Images
+              </Button>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {images.length === 0 ? "No images selected" : `${images.length} image${images.length > 1 ? "s" : ""} selected`}
+              </span>
+            </div>
+          </div>
 
           {/* Prescription Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Prescription Details</CardTitle>
-              <CardDescription>Add any additional notes or special instructions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div>
-                <Label htmlFor="note">Notes (Optional)</Label>
-                <Textarea
-                  id="note"
-                  placeholder="Any special instructions, urgency, or additional information..."
-                  className="mt-1"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 mb-2">
+            <div className="mb-2">
+              <h2 className="text-lg font-bold">Prescription Details</h2>
+              <p className="text-sm text-gray-500">Add any additional notes or special instructions</p>
+            </div>
+            <div>
+              <Label htmlFor="note">Notes (Optional)</Label>
+              <Textarea
+                id="note"
+                placeholder="Any special instructions, urgency, or additional information..."
+                className="mt-1"
+              />
+            </div>
+          </div>
 
           {/* Delivery Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Delivery Information</CardTitle>
-              <CardDescription>Specify where and when you'd like your medications delivered</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <div className="rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 mb-2">
+            <div className="mb-2">
+              <h2 className="text-lg font-bold">Delivery Information</h2>
+              <p className="text-sm text-gray-500">Specify where and when you'd like your medications delivered</p>
+            </div>
+            <div className="space-y-4">
               <div>
                 <Label htmlFor="address">Delivery Address</Label>
                 <Textarea
@@ -123,7 +118,6 @@ export default function UploadPrescription() {
                   className="mt-1"
                 />
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="date">Preferred Date</Label>
@@ -152,7 +146,6 @@ export default function UploadPrescription() {
                   </Select>
                 </div>
               </div>
-
               <div>
                 <Label htmlFor="phone">Contact Number</Label>
                 <Input
@@ -163,8 +156,8 @@ export default function UploadPrescription() {
                   className="mt-1"
                 />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Submit Button */}
           <div className="flex justify-end space-x-4">
