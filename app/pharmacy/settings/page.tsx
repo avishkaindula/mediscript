@@ -38,9 +38,9 @@ export default function UserSettings() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
       <div className="w-full max-w-md mx-auto">
-        <Card className="rounded-2xl shadow-xl border-0 bg-white/90 dark:bg-gray-900/80 backdrop-blur-md">
+        <Card className="rounded-2xl shadow-xl border-0 bg-white dark:bg-gray-900">
           <CardHeader className="pb-2">
             <div className="flex flex-col items-center gap-2">
               <span className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full mb-2">
