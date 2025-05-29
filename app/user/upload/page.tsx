@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,6 +18,8 @@ export default function UploadPrescription() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [images, setImages] = useState<File[]>([])
+  const [modalOpen, setModalOpen] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -69,51 +71,20 @@ export default function UploadPrescription() {
       </header>
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Image Upload */}
+          {/* Image Upload (Modal Trigger) */}
           <Card>
             <CardHeader>
               <CardTitle>Prescription Images</CardTitle>
               <CardDescription>Upload up to 5 clear images of your prescription (JPG, PNG, PDF)</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {/* Upload Area */}
-                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*,.pdf"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="file-upload"
-                  />
-                  <label htmlFor="file-upload" className="cursor-pointer">
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-lg font-medium text-gray-900 dark:text-white">Click to upload files</p>
-                    <p className="text-sm text-gray-500">or drag and drop your prescription images here</p>
-                  </label>
-                </div>
-
-                {/* Uploaded Images */}
-                {images.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {images.map((image, index) => (
-                      <div key={index} className="relative group">
-                        <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                          <ImageIcon className="w-8 h-8 text-gray-400" />
-                        </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate">{image.name}</p>
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <div className="flex items-center gap-4">
+                <Button type="button" onClick={() => setModalOpen(true)}>
+                  Upload Images
+                </Button>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {images.length === 0 ? "No images selected" : `${images.length} image${images.length > 1 ? "s" : ""} selected`}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -210,6 +181,65 @@ export default function UploadPrescription() {
           </div>
         </form>
       </div>
+
+      {/* Custom Modal for Image Upload */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-md p-6 relative">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-white"
+              onClick={() => setModalOpen(false)}
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <h2 className="text-lg font-bold mb-2">Upload Images</h2>
+            <p className="text-sm text-gray-500 mb-4">You can upload up to 5 images (JPG, PNG, PDF).</p>
+            <div className="space-y-4">
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*,.pdf"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  id="modal-file-upload"
+                  ref={fileInputRef}
+                />
+                <label htmlFor="modal-file-upload" className="cursor-pointer">
+                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-lg font-medium text-gray-900 dark:text-white">Click to upload files</p>
+                  <p className="text-sm text-gray-500">or drag and drop your prescription images here</p>
+                </label>
+              </div>
+              {images.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-32 overflow-y-auto">
+                  {images.map((image, index) => (
+                    <div key={index} className="relative group w-20 h-20">
+                      <div className="bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center w-full h-full">
+                        <ImageIcon className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate w-full">{image.name}</p>
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex justify-end gap-2 mt-4">
+                <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>
+                  Done
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
