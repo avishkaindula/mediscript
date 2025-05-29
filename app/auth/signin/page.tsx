@@ -1,46 +1,52 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
-import { Pill, ArrowLeft } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { Pill, ArrowLeft } from "lucide-react";
 
 export default function SignInPage() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const formData = new FormData(e.target as HTMLFormElement)
-    const email = formData.get("email") as string
+    const formData = new FormData(e.target as HTMLFormElement);
+    const email = formData.get("email") as string;
 
     // Simple demo logic - redirect based on email
     if (email.includes("pharmacy")) {
-      router.push("/pharmacy/dashboard")
+      router.push("/pharmacy/dashboard");
     } else {
-      router.push("/user/dashboard")
+      router.push("/user/dashboard");
     }
 
     toast({
       title: "Welcome back!",
       description: "You have been signed in successfully.",
-    })
+    });
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
@@ -64,7 +70,9 @@ export default function SignInPage() {
         <Card>
           <CardHeader>
             <CardTitle>Welcome Back</CardTitle>
-            <CardDescription>Sign in to your MediScript account</CardDescription>
+            <CardDescription>
+              Sign in to your MediScript account
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -78,7 +86,8 @@ export default function SignInPage() {
                   required
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Use "pharmacy@example.com" for pharmacy demo or "user@example.com" for patient demo
+                  Use "pharmacy@example.com" for pharmacy demo or
+                  "user@example.com" for patient demo
                 </p>
               </div>
 
@@ -88,7 +97,10 @@ export default function SignInPage() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-blue-600 hover:underline"
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -101,7 +113,7 @@ export default function SignInPage() {
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Don't have an account?{" "}
-                <Link href="/auth/signup" className="text-blue-600 hover:underline">
+                <Link href="/signup" className="text-blue-600 hover:underline">
                   Sign up
                 </Link>
               </p>
@@ -110,5 +122,5 @@ export default function SignInPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

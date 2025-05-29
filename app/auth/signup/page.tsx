@@ -1,41 +1,53 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
-import { Pill, ArrowLeft } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Pill, ArrowLeft } from "lucide-react";
 
 export default function SignUpPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const { toast } = useToast()
-  const [loading, setLoading] = useState(false)
-  const [userType, setUserType] = useState(searchParams.get("type") || "user")
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [userType, setUserType] = useState(searchParams.get("type") || "user");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     toast({
       title: "Account created successfully!",
       description: "Welcome to MediScript. You can now sign in.",
-    })
+    });
 
-    setLoading(false)
-    router.push("/auth/signin")
-  }
+    setLoading(false);
+    router.push("/signin");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
@@ -59,7 +71,9 @@ export default function SignUpPage() {
         <Card>
           <CardHeader>
             <CardTitle>Create Account</CardTitle>
-            <CardDescription>Join MediScript to start managing your prescriptions digitally</CardDescription>
+            <CardDescription>
+              Join MediScript to start managing your prescriptions digitally
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -77,7 +91,9 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <Label htmlFor="name">{userType === "pharmacy" ? "Pharmacy Name" : "Full Name"}</Label>
+                <Label htmlFor="name">
+                  {userType === "pharmacy" ? "Pharmacy Name" : "Full Name"}
+                </Label>
                 <Input id="name" required />
               </div>
 
@@ -99,7 +115,9 @@ export default function SignUpPage() {
               )}
 
               <div>
-                <Label htmlFor="address">{userType === "pharmacy" ? "Pharmacy Address" : "Address"}</Label>
+                <Label htmlFor="address">
+                  {userType === "pharmacy" ? "Pharmacy Address" : "Address"}
+                </Label>
                 <Textarea id="address" required />
               </div>
 
@@ -134,7 +152,7 @@ export default function SignUpPage() {
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Already have an account?{" "}
-                <Link href="/auth/signin" className="text-blue-600 hover:underline">
+                <Link href="/signin" className="text-blue-600 hover:underline">
                   Sign in
                 </Link>
               </p>
@@ -143,5 +161,5 @@ export default function SignUpPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
