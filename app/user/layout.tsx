@@ -13,7 +13,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
       </div>
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
+        <header className="bg-white dark:bg-gray-800 shadow-sm border-b md:hidden">
           <div className="flex items-center px-4 md:px-6 py-4">
             {/* Mobile Menu */}
             <Sheet>
