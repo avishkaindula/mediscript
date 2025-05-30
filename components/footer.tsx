@@ -15,8 +15,8 @@ export default function Footer() {
               <span className="text-xl font-bold">MediScript</span>
             </div>
             <p className="text-gray-500 dark:text-gray-400 mb-4">
-              Making prescription management simple, transparent, and
-              affordable for everyone.
+              Making prescription management simple, transparent, and affordable
+              for everyone.
             </p>
           </div>
 
@@ -101,14 +101,6 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-500 dark:text-gray-400">
               <li>
                 <Link
-                  href="/help"
-                  className="hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/contact"
                   className="hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
@@ -135,4 +127,4 @@ export default function Footer() {
       </div>
     </footer>
   );
-} 
+}
