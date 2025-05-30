@@ -8,16 +8,33 @@ import { redirect } from "next/navigation";
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
+  const name = formData.get("name")?.toString();
+  const phone = formData.get("phone")?.toString();
+  const dob = formData.get("dob")?.toString();
+  const address = formData.get("address")?.toString();
+  const license = formData.get("license")?.toString();
+  const registration = formData.get("registration")?.toString();
+  const userType = formData.get("userType")?.toString() || "user";
+  const confirmPassword = formData.get("confirmPassword")?.toString();
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
   if (!email || !password) {
     return encodedRedirect(
       "error",
-      "/sign-up",
+      userType === "pharmacy" ? "/sign-up/pharmacy" : "/sign-up/user",
       "Email and password are required"
     );
   }
+  if (password !== confirmPassword) {
+    return encodedRedirect(
+      "error",
+      userType === "pharmacy" ? "/sign-up/pharmacy" : "/sign-up/user",
+      "Passwords do not match"
+    );
+  }
+
+  // You can add more validation for required fields based on userType here if needed
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -29,11 +46,15 @@ export const signUpAction = async (formData: FormData) => {
 
   if (error) {
     console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
+    return encodedRedirect(
+      "error",
+      userType === "pharmacy" ? "/sign-up/pharmacy" : "/sign-up/user",
+      error.message
+    );
   } else {
     return encodedRedirect(
       "success",
-      "/sign-up",
+      userType === "pharmacy" ? "/sign-up/pharmacy" : "/sign-up/user",
       "Thanks for signing up! Please check your email for a verification link."
     );
   }
