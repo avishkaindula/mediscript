@@ -1,18 +1,28 @@
-"use client";
-
 import { signUpAction } from "@/app/actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SubmitButton } from "@/components/submit-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Pill, ArrowLeft } from "lucide-react";
 
-export default async function UserSignUpPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
+export default async function UserSignUpPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) {
   const messageParam = searchParams["message"];
-  const message: Message | undefined = messageParam ? { message: messageParam } : undefined;
+  const message: Message | undefined = messageParam
+    ? { message: messageParam }
+    : undefined;
   // Only allow user sign-up
   const userType = "user";
 
@@ -21,7 +31,10 @@ export default async function UserSignUpPage({ searchParams }: { searchParams: {
       <div className="w-full max-w-md">
         <div className="relative flex items-center justify-center mb-8 min-h-[40px]">
           <Link href="/" className="absolute left-0 flex items-center">
-            <button type="button" className="bg-transparent border-none p-0 m-0">
+            <button
+              type="button"
+              className="bg-transparent border-none p-0 m-0"
+            >
               <ArrowLeft className="w-4 h-4" />
             </button>
           </Link>
@@ -71,16 +84,27 @@ export default async function UserSignUpPage({ searchParams }: { searchParams: {
               </div>
               <div>
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input id="confirmPassword" name="confirmPassword" type="password" required />
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                />
               </div>
-              <SubmitButton pendingText="Creating Account..." className="w-full">
+              <SubmitButton
+                pendingText="Creating Account..."
+                className="w-full"
+              >
                 Create Account
               </SubmitButton>
               {message && <FormMessage message={message} />}
               <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Already have an account?{" "}
-                  <Link href="/sign-in" className="text-blue-600 hover:underline">
+                  <Link
+                    href="/sign-in"
+                    className="text-blue-600 hover:underline"
+                  >
                     Sign in
                   </Link>
                 </p>
@@ -91,4 +115,4 @@ export default async function UserSignUpPage({ searchParams }: { searchParams: {
       </div>
     </div>
   );
-} 
+}
