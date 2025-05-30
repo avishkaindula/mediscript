@@ -1,8 +1,21 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Upload, Search, DollarSign, CheckCircle, ArrowRight } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowLeft,
+  Upload,
+  Search,
+  DollarSign,
+  CheckCircle,
+  ArrowRight,
+} from "lucide-react";
 
 export default function HowItWorksPage() {
   return (
@@ -27,14 +40,17 @@ export default function HowItWorksPage() {
             Simple. Fast. Transparent.
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Get the best prices for your prescriptions in just a few simple steps. Compare quotes from multiple
-            pharmacies and choose what works best for you.
+            Get the best prices for your prescriptions in just a few simple
+            steps. Compare quotes from multiple pharmacies and choose what works
+            best for you.
           </p>
         </div>
 
         {/* How It Works Steps */}
         <div className="max-w-6xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Get Started in 4 Easy Steps</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">
+            Get Started in 4 Easy Steps
+          </h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Step 1 */}
@@ -47,7 +63,9 @@ export default function HowItWorksPage() {
                   Step 1
                 </Badge>
                 <CardTitle>Upload Prescription</CardTitle>
-                <CardDescription>Take a photo or upload an image of your prescription</CardDescription>
+                <CardDescription>
+                  Take a photo or upload an image of your prescription
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-1">
@@ -69,7 +87,9 @@ export default function HowItWorksPage() {
                   Step 2
                 </Badge>
                 <CardTitle>Pharmacies Review</CardTitle>
-                <CardDescription>Local pharmacies review your prescription and prepare quotes</CardDescription>
+                <CardDescription>
+                  Local pharmacies review your prescription and prepare quotes
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-1">
@@ -91,7 +111,9 @@ export default function HowItWorksPage() {
                   Step 3
                 </Badge>
                 <CardTitle>Compare Quotes</CardTitle>
-                <CardDescription>Review and compare quotations from multiple pharmacies</CardDescription>
+                <CardDescription>
+                  Review and compare quotations from multiple pharmacies
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-1">
@@ -113,7 +135,9 @@ export default function HowItWorksPage() {
                   Step 4
                 </Badge>
                 <CardTitle>Accept & Collect</CardTitle>
-                <CardDescription>Accept your preferred quote and collect your medication</CardDescription>
+                <CardDescription>
+                  Accept your preferred quote and collect your medication
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-1">
@@ -128,7 +152,9 @@ export default function HowItWorksPage() {
 
         {/* Benefits Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose MediScript?</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">
+            Why Choose MediScript?
+          </h2>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <Card>
@@ -140,8 +166,8 @@ export default function HowItWorksPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-center">
-                  Compare prices from multiple pharmacies to find the best deal. Users typically save 20-40% on their
-                  prescriptions.
+                  Compare prices from multiple pharmacies to find the best deal.
+                  Users typically save 20-40% on their prescriptions.
                 </p>
               </CardContent>
             </Card>
@@ -155,8 +181,8 @@ export default function HowItWorksPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-center">
-                  No more calling around to different pharmacies. Get multiple quotes delivered to your dashboard in
-                  hours, not days.
+                  No more calling around to different pharmacies. Get multiple
+                  quotes delivered to your dashboard in hours, not days.
                 </p>
               </CardContent>
             </Card>
@@ -170,8 +196,8 @@ export default function HowItWorksPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-center">
-                  See exactly what you'll pay before you commit. No hidden fees, no surprises - just clear, upfront
-                  pricing.
+                  See exactly what you'll pay before you commit. No hidden fees,
+                  no surprises - just clear, upfront pricing.
                 </p>
               </CardContent>
             </Card>
@@ -186,38 +212,45 @@ export default function HowItWorksPage() {
                 For Pharmacies
               </Badge>
               <CardTitle className="text-2xl">Join Our Network</CardTitle>
-              <CardDescription>Connect with more patients and grow your business through our platform</CardDescription>
+              <CardDescription>
+                Connect with more patients and grow your business through our
+                platform
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold mb-2">Reach More Patients</h4>
                   <p className="text-muted-foreground text-sm">
-                    Connect with patients actively looking for prescription services in your area.
+                    Connect with patients actively looking for prescription
+                    services in your area.
                   </p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Streamlined Process</h4>
                   <p className="text-muted-foreground text-sm">
-                    Efficient quotation system that integrates with your existing workflow.
+                    Efficient quotation system that integrates with your
+                    existing workflow.
                   </p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Competitive Advantage</h4>
                   <p className="text-muted-foreground text-sm">
-                    Showcase your competitive pricing and excellent service to win more business.
+                    Showcase your competitive pricing and excellent service to
+                    win more business.
                   </p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Professional Network</h4>
                   <p className="text-muted-foreground text-sm">
-                    Join a trusted network of licensed pharmacies committed to patient care.
+                    Join a trusted network of licensed pharmacies committed to
+                    patient care.
                   </p>
                 </div>
               </div>
               <div className="text-center">
                 <Button asChild>
-                  <Link href="/(public)/contact">Become a Partner Pharmacy</Link>
+                  <Link href="/contact">Become a Partner Pharmacy</Link>
                 </Button>
               </div>
             </CardContent>
@@ -230,14 +263,15 @@ export default function HowItWorksPage() {
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold mb-4">Ready to Get Started?</h3>
               <p className="text-muted-foreground mb-6">
-                Join thousands of patients who are already saving time and money on their prescriptions.
+                Join thousands of patients who are already saving time and money
+                on their prescriptions.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild>
                   <Link href="/auth/signup">Create Free Account</Link>
                 </Button>
                 <Button variant="outline" size="lg" asChild>
-                  <Link href="/(public)/help">Learn More</Link>
+                  <Link href="/help">Learn More</Link>
                 </Button>
               </div>
             </CardContent>
@@ -245,5 +279,5 @@ export default function HowItWorksPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

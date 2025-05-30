@@ -1,8 +1,14 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, FileText, Scale, AlertTriangle, CheckCircle } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowLeft,
+  FileText,
+  Scale,
+  AlertTriangle,
+  CheckCircle,
+} from "lucide-react";
 
 export default function TermsPage() {
   return (
@@ -27,10 +33,12 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Please read these terms carefully before using MediScript. By using our service, you agree to these terms
-            and conditions.
+            Please read these terms carefully before using MediScript. By using
+            our service, you agree to these terms and conditions.
           </p>
-          <p className="text-sm text-muted-foreground mt-4">Last updated: January 1, 2024</p>
+          <p className="text-sm text-muted-foreground mt-4">
+            Last updated: January 1, 2024
+          </p>
         </div>
 
         {/* Key Points */}
@@ -39,7 +47,9 @@ export default function TermsPage() {
             <CardContent className="p-6 text-center">
               <FileText className="h-8 w-8 text-blue-600 mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Clear Terms</h3>
-              <p className="text-sm text-muted-foreground">Straightforward terms written in plain language</p>
+              <p className="text-sm text-muted-foreground">
+                Straightforward terms written in plain language
+              </p>
             </CardContent>
           </Card>
 
@@ -47,7 +57,9 @@ export default function TermsPage() {
             <CardContent className="p-6 text-center">
               <Scale className="h-8 w-8 text-green-600 mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Fair Usage</h3>
-              <p className="text-sm text-muted-foreground">Reasonable terms that protect both users and service</p>
+              <p className="text-sm text-muted-foreground">
+                Reasonable terms that protect both users and service
+              </p>
             </CardContent>
           </Card>
 
@@ -55,7 +67,9 @@ export default function TermsPage() {
             <CardContent className="p-6 text-center">
               <AlertTriangle className="h-8 w-8 text-orange-600 mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Your Responsibilities</h3>
-              <p className="text-sm text-muted-foreground">What we expect from users of our platform</p>
+              <p className="text-sm text-muted-foreground">
+                What we expect from users of our platform
+              </p>
             </CardContent>
           </Card>
 
@@ -63,7 +77,9 @@ export default function TermsPage() {
             <CardContent className="p-6 text-center">
               <CheckCircle className="h-8 w-8 text-purple-600 mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Your Rights</h3>
-              <p className="text-sm text-muted-foreground">What you can expect from our service</p>
+              <p className="text-sm text-muted-foreground">
+                What you can expect from our service
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -76,9 +92,10 @@ export default function TermsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                By accessing or using MediScript, you agree to be bound by these Terms of Service and all applicable
-                laws and regulations. If you do not agree with any of these terms, you are prohibited from using or
-                accessing this service.
+                By accessing or using MediScript, you agree to be bound by these
+                Terms of Service and all applicable laws and regulations. If you
+                do not agree with any of these terms, you are prohibited from
+                using or accessing this service.
               </p>
             </CardContent>
           </Card>
@@ -89,7 +106,8 @@ export default function TermsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">
-                MediScript is a digital platform that connects patients with pharmacies to:
+                MediScript is a digital platform that connects patients with
+                pharmacies to:
               </p>
               <ul className="space-y-2 text-muted-foreground ml-4">
                 <li>• Upload and manage prescription images</li>
@@ -99,7 +117,8 @@ export default function TermsPage() {
                 <li>• Track prescription status and history</li>
               </ul>
               <p className="text-muted-foreground">
-                MediScript is a technology platform and does not provide medical advice, diagnosis, or treatment.
+                MediScript is a technology platform and does not provide medical
+                advice, diagnosis, or treatment.
               </p>
             </CardContent>
           </Card>
@@ -112,15 +131,16 @@ export default function TermsPage() {
               <div>
                 <h4 className="font-semibold mb-2">Account Creation</h4>
                 <p className="text-muted-foreground">
-                  You must provide accurate, current, and complete information when creating your account and keep this
-                  information updated.
+                  You must provide accurate, current, and complete information
+                  when creating your account and keep this information updated.
                 </p>
               </div>
               <div>
                 <h4 className="font-semibold mb-2">Account Security</h4>
                 <p className="text-muted-foreground">
-                  You are responsible for maintaining the confidentiality of your account credentials and for all
-                  activities that occur under your account.
+                  You are responsible for maintaining the confidentiality of
+                  your account credentials and for all activities that occur
+                  under your account.
                 </p>
               </div>
               <div>
@@ -149,17 +169,26 @@ export default function TermsPage() {
                       Important Medical Disclaimer
                     </h4>
                     <p className="text-yellow-700 dark:text-yellow-300 text-sm">
-                      MediScript does not provide medical advice, diagnosis, or treatment. Always consult with qualified
-                      healthcare professionals for medical decisions.
+                      MediScript does not provide medical advice, diagnosis, or
+                      treatment. Always consult with qualified healthcare
+                      professionals for medical decisions.
                     </p>
                   </div>
                 </div>
               </div>
               <ul className="space-y-2 text-muted-foreground">
-                <li>• We do not verify prescription validity or appropriateness</li>
-                <li>• Pharmacy partners are responsible for prescription verification</li>
+                <li>
+                  • We do not verify prescription validity or appropriateness
+                </li>
+                <li>
+                  • Pharmacy partners are responsible for prescription
+                  verification
+                </li>
                 <li>• Users must ensure prescriptions are current and valid</li>
-                <li>• Emergency medical situations require immediate professional care</li>
+                <li>
+                  • Emergency medical situations require immediate professional
+                  care
+                </li>
               </ul>
             </CardContent>
           </Card>
@@ -170,11 +199,13 @@ export default function TermsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Your privacy is important to us. Our collection, use, and protection of your personal and medical
-                information is governed by our Privacy Policy, which is incorporated into these terms by reference.
+                Your privacy is important to us. Our collection, use, and
+                protection of your personal and medical information is governed
+                by our Privacy Policy, which is incorporated into these terms by
+                reference.
               </p>
               <Button variant="outline" className="mt-4" asChild>
-                <Link href="/(public)/privacy">Read Privacy Policy</Link>
+                <Link href="/privacy">Read Privacy Policy</Link>
               </Button>
             </CardContent>
           </Card>
@@ -185,9 +216,10 @@ export default function TermsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                MediScript shall not be liable for any indirect, incidental, special, consequential, or punitive
-                damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses,
-                resulting from your use of the service.
+                MediScript shall not be liable for any indirect, incidental,
+                special, consequential, or punitive damages, including without
+                limitation, loss of profits, data, use, goodwill, or other
+                intangible losses, resulting from your use of the service.
               </p>
             </CardContent>
           </Card>
@@ -198,12 +230,14 @@ export default function TermsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">
-                We may terminate or suspend your account and access to the service immediately, without prior notice,
-                for conduct that we believe violates these Terms of Service or is harmful to other users, us, or third
-                parties.
+                We may terminate or suspend your account and access to the
+                service immediately, without prior notice, for conduct that we
+                believe violates these Terms of Service or is harmful to other
+                users, us, or third parties.
               </p>
               <p className="text-muted-foreground">
-                You may terminate your account at any time by contacting our support team.
+                You may terminate your account at any time by contacting our
+                support team.
               </p>
             </CardContent>
           </Card>
@@ -214,9 +248,10 @@ export default function TermsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                We reserve the right to modify these terms at any time. We will notify users of significant changes via
-                email or through the platform. Continued use of the service after changes constitutes acceptance of the
-                new terms.
+                We reserve the right to modify these terms at any time. We will
+                notify users of significant changes via email or through the
+                platform. Continued use of the service after changes constitutes
+                acceptance of the new terms.
               </p>
             </CardContent>
           </Card>
@@ -227,17 +262,21 @@ export default function TermsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                If you have questions about these Terms of Service, please contact us:
+                If you have questions about these Terms of Service, please
+                contact us:
               </p>
               <div className="space-y-2 text-muted-foreground">
                 <p>Email: legal@mediscript.com</p>
                 <p>Phone: +1 (555) 123-4567</p>
-                <p>Address: 123 Healthcare Blvd, Suite 456, Medical City, MC 12345</p>
+                <p>
+                  Address: 123 Healthcare Blvd, Suite 456, Medical City, MC
+                  12345
+                </p>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }

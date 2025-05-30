@@ -1,10 +1,29 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ArrowLeft, Search, HelpCircle, Upload, DollarSign, Shield, Phone } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  ArrowLeft,
+  Search,
+  HelpCircle,
+  Upload,
+  DollarSign,
+  Shield,
+  Phone,
+} from "lucide-react";
 
 export default function HelpPage() {
   return (
@@ -29,7 +48,8 @@ export default function HelpPage() {
             How Can We Help?
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Find answers to common questions about using MediScript, or get in touch with our support team.
+            Find answers to common questions about using MediScript, or get in
+            touch with our support team.
           </p>
 
           {/* Search Bar */}
@@ -45,7 +65,9 @@ export default function HelpPage() {
             <CardContent className="p-6 text-center">
               <Upload className="h-8 w-8 text-blue-600 mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Getting Started</h3>
-              <p className="text-sm text-muted-foreground">Learn how to upload prescriptions and create your account</p>
+              <p className="text-sm text-muted-foreground">
+                Learn how to upload prescriptions and create your account
+              </p>
             </CardContent>
           </Card>
 
@@ -53,7 +75,9 @@ export default function HelpPage() {
             <CardContent className="p-6 text-center">
               <DollarSign className="h-8 w-8 text-green-600 mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Quotations</h3>
-              <p className="text-sm text-muted-foreground">Understanding how quotations work and comparing prices</p>
+              <p className="text-sm text-muted-foreground">
+                Understanding how quotations work and comparing prices
+              </p>
             </CardContent>
           </Card>
 
@@ -61,7 +85,9 @@ export default function HelpPage() {
             <CardContent className="p-6 text-center">
               <Shield className="h-8 w-8 text-purple-600 mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Privacy & Security</h3>
-              <p className="text-sm text-muted-foreground">How we protect your medical information</p>
+              <p className="text-sm text-muted-foreground">
+                How we protect your medical information
+              </p>
             </CardContent>
           </Card>
 
@@ -69,14 +95,18 @@ export default function HelpPage() {
             <CardContent className="p-6 text-center">
               <Phone className="h-8 w-8 text-orange-600 mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Contact Support</h3>
-              <p className="text-sm text-muted-foreground">Get in touch with our support team</p>
+              <p className="text-sm text-muted-foreground">
+                Get in touch with our support team
+              </p>
             </CardContent>
           </Card>
         </div>
 
         {/* FAQ Section */}
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">
+            Frequently Asked Questions
+          </h2>
 
           <Accordion type="single" collapsible className="space-y-4">
             <AccordionItem value="item-1">
@@ -84,14 +114,18 @@ export default function HelpPage() {
                 <AccordionTrigger className="px-6 py-4 hover:no-underline">
                   <div className="flex items-center gap-3">
                     <HelpCircle className="h-5 w-5 text-blue-600" />
-                    <span className="font-semibold text-left">How do I upload a prescription?</span>
+                    <span className="font-semibold text-left">
+                      How do I upload a prescription?
+                    </span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4">
                   <p className="text-muted-foreground">
-                    To upload a prescription, sign in to your account and click "Upload Prescription" from your
-                    dashboard. You can take a photo with your phone or upload an existing image. Make sure the
-                    prescription is clear and all text is readable. Our system accepts JPG, PNG, and PDF formats.
+                    To upload a prescription, sign in to your account and click
+                    "Upload Prescription" from your dashboard. You can take a
+                    photo with your phone or upload an existing image. Make sure
+                    the prescription is clear and all text is readable. Our
+                    system accepts JPG, PNG, and PDF formats.
                   </p>
                 </AccordionContent>
               </Card>
@@ -102,14 +136,18 @@ export default function HelpPage() {
                 <AccordionTrigger className="px-6 py-4 hover:no-underline">
                   <div className="flex items-center gap-3">
                     <HelpCircle className="h-5 w-5 text-green-600" />
-                    <span className="font-semibold text-left">How long does it take to receive quotations?</span>
+                    <span className="font-semibold text-left">
+                      How long does it take to receive quotations?
+                    </span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4">
                   <p className="text-muted-foreground">
-                    Most pharmacies respond with quotations within 2-4 hours during business hours. You'll receive an
-                    email notification when new quotations are available. Some pharmacies may take up to 24 hours,
-                    especially for complex prescriptions or during busy periods.
+                    Most pharmacies respond with quotations within 2-4 hours
+                    during business hours. You'll receive an email notification
+                    when new quotations are available. Some pharmacies may take
+                    up to 24 hours, especially for complex prescriptions or
+                    during busy periods.
                   </p>
                 </AccordionContent>
               </Card>
@@ -120,14 +158,18 @@ export default function HelpPage() {
                 <AccordionTrigger className="px-6 py-4 hover:no-underline">
                   <div className="flex items-center gap-3">
                     <HelpCircle className="h-5 w-5 text-purple-600" />
-                    <span className="font-semibold text-left">Is my medical information secure?</span>
+                    <span className="font-semibold text-left">
+                      Is my medical information secure?
+                    </span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4">
                   <p className="text-muted-foreground">
-                    Yes, we take your privacy seriously. All medical information is encrypted and stored securely. We're
-                    HIPAA compliant and only share your prescription information with pharmacies you choose to request
-                    quotations from. We never sell your data to third parties.
+                    Yes, we take your privacy seriously. All medical information
+                    is encrypted and stored securely. We're HIPAA compliant and
+                    only share your prescription information with pharmacies you
+                    choose to request quotations from. We never sell your data
+                    to third parties.
                   </p>
                 </AccordionContent>
               </Card>
@@ -138,14 +180,17 @@ export default function HelpPage() {
                 <AccordionTrigger className="px-6 py-4 hover:no-underline">
                   <div className="flex items-center gap-3">
                     <HelpCircle className="h-5 w-5 text-orange-600" />
-                    <span className="font-semibold text-left">Can I use expired prescriptions?</span>
+                    <span className="font-semibold text-left">
+                      Can I use expired prescriptions?
+                    </span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4">
                   <p className="text-muted-foreground">
-                    No, pharmacies cannot fill expired prescriptions. Please ensure your prescription is current and
-                    valid before uploading. If your prescription has expired, you'll need to contact your healthcare
-                    provider for a new one.
+                    No, pharmacies cannot fill expired prescriptions. Please
+                    ensure your prescription is current and valid before
+                    uploading. If your prescription has expired, you'll need to
+                    contact your healthcare provider for a new one.
                   </p>
                 </AccordionContent>
               </Card>
@@ -156,14 +201,18 @@ export default function HelpPage() {
                 <AccordionTrigger className="px-6 py-4 hover:no-underline">
                   <div className="flex items-center gap-3">
                     <HelpCircle className="h-5 w-5 text-red-600" />
-                    <span className="font-semibold text-left">What if I need to cancel or modify a quotation?</span>
+                    <span className="font-semibold text-left">
+                      What if I need to cancel or modify a quotation?
+                    </span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4">
                   <p className="text-muted-foreground">
-                    You can reject quotations at any time from your dashboard. If you've already accepted a quotation
-                    but need to cancel, contact the pharmacy directly using the contact information provided in the
-                    quotation details. Each pharmacy has their own cancellation policy.
+                    You can reject quotations at any time from your dashboard.
+                    If you've already accepted a quotation but need to cancel,
+                    contact the pharmacy directly using the contact information
+                    provided in the quotation details. Each pharmacy has their
+                    own cancellation policy.
                   </p>
                 </AccordionContent>
               </Card>
@@ -174,14 +223,17 @@ export default function HelpPage() {
                 <AccordionTrigger className="px-6 py-4 hover:no-underline">
                   <div className="flex items-center gap-3">
                     <HelpCircle className="h-5 w-5 text-teal-600" />
-                    <span className="font-semibold text-left">Do I need to pay through MediScript?</span>
+                    <span className="font-semibold text-left">
+                      Do I need to pay through MediScript?
+                    </span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4">
                   <p className="text-muted-foreground">
-                    No, MediScript is a free platform for patients. You pay the pharmacy directly when you pick up your
-                    prescription. Payment methods and policies vary by pharmacy, so check the quotation details for
-                    specific information.
+                    No, MediScript is a free platform for patients. You pay the
+                    pharmacy directly when you pick up your prescription.
+                    Payment methods and policies vary by pharmacy, so check the
+                    quotation details for specific information.
                   </p>
                 </AccordionContent>
               </Card>
@@ -192,22 +244,27 @@ export default function HelpPage() {
           <Card className="mt-12">
             <CardHeader className="text-center">
               <CardTitle>Still Need Help?</CardTitle>
-              <CardDescription>Our support team is here to help you with any questions or issues.</CardDescription>
+              <CardDescription>
+                Our support team is here to help you with any questions or
+                issues.
+              </CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild>
-                  <Link href="/(public)/contact">Contact Support</Link>
+                  <Link href="/contact">Contact Support</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link href="/(public)/how-it-works">How It Works</Link>
+                  <Link href="/how-it-works">How It Works</Link>
                 </Button>
               </div>
-              <p className="text-sm text-muted-foreground">Email: support@mediscript.com | Phone: +1 (555) 123-4567</p>
+              <p className="text-sm text-muted-foreground">
+                Email: support@mediscript.com | Phone: +1 (555) 123-4567
+              </p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }
