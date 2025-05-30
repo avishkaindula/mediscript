@@ -8,6 +8,7 @@ import { Menu, Home, FileText, Users, BarChart3, Settings, LogOut, Pill, Upload,
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { signOutAction } from "@/app/actions";
 
 // Pharmacy navigation
 const pharmacyNavigation = [
@@ -65,13 +66,16 @@ function MobileSidebarContent({ navigation, onNavigate }: { navigation: any[]; o
           <span className="text-sm text-gray-600 dark:text-gray-400">Theme</span>
           <ThemeToggle />
         </div>
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Sign Out
-        </Button>
+        <form action={signOutAction}>
+          <Button
+            type="submit"
+            variant="ghost"
+            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        </form>
       </div>
     </div>
   );
