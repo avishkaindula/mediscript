@@ -3,7 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
@@ -15,8 +21,10 @@ import {
   CheckCircle,
   ArrowRight,
   Pill,
+  Search,
   Heart,
   Star,
+  DollarSign,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -194,53 +202,66 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* How It Works Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              How It Works
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              How MediScript Works
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Simple steps to get your medications
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Get started in just 4 simple steps
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                step: "01",
-                title: "Upload Prescription",
-                description:
-                  "Take photos of your prescription and upload them with delivery details",
-              },
-              {
-                step: "02",
-                title: "Receive Quotations",
-                description:
-                  "Pharmacies review your prescription and send competitive quotations",
-              },
-              {
-                step: "03",
-                title: "Choose & Deliver",
-                description:
-                  "Accept the best quotation and get your medications delivered",
-              },
-            ].map((step, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold text-lg">
-                    {step.step}
-                  </span>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Upload className="h-8 w-8 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  {step.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  {step.description}
-                </p>
-              </div>
-            ))}
+                <CardTitle>1. Upload</CardTitle>
+                <CardDescription>
+                  Take a photo of your prescription or upload an existing image
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-green-600" />
+                </div>
+                <CardTitle>2. Review</CardTitle>
+                <CardDescription>
+                  Local pharmacies review your prescription and prepare quotes
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <DollarSign className="h-8 w-8 text-purple-600" />
+                </div>
+                <CardTitle>3. Compare</CardTitle>
+                <CardDescription>
+                  Compare prices and services from multiple pharmacies
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="h-8 w-8 text-orange-600" />
+                </div>
+                <CardTitle>4. Save</CardTitle>
+                <CardDescription>
+                  Choose the best option and save money on your medication
+                </CardDescription>
+              </CardHeader>
+            </Card>
           </div>
         </div>
       </section>
