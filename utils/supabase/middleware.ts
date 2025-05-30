@@ -1,5 +1,19 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { jwtDecode } from "jwt-decode";
+
+const PUBLIC_PATHS = [
+  "/sign-in",
+  "/sign-up/user",
+  "/sign-up/pharmacy",
+  "/forgot-password",
+  "/about",
+  "/contact",
+  "/help",
+  "/how-it-works",
+  "/privacy",
+  "/terms",
+];
 
 export const updateSession = async (request: NextRequest) => {
   // This `try/catch` block is only here for the interactive tutorial.
@@ -22,30 +36,60 @@ export const updateSession = async (request: NextRequest) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value }) =>
-              request.cookies.set(name, value),
+              request.cookies.set(name, value)
             );
             response = NextResponse.next({
               request,
             });
             cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, options),
+              response.cookies.set(name, value, options)
             );
           },
         },
-      },
+      }
     );
 
     // This will refresh session if expired - required for Server Components
     // https://supabase.com/docs/guides/auth/server-side/nextjs
     const user = await supabase.auth.getUser();
 
-    // protected routes
-    if (request.nextUrl.pathname.startsWith("/protected") && user.error) {
+    // Get the session and decode the user role
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    let userRole;
+    if (session?.access_token) {
+      const jwt = jwtDecode(session.access_token) as any;
+      userRole = jwt.user_role;
+    }
+
+    const path = request.nextUrl.pathname;
+
+    // If not authenticated and not on a public path, redirect to sign-in
+    if (user.error && !PUBLIC_PATHS.includes(path)) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
-    if (request.nextUrl.pathname === "/" && !user.error) {
-      return NextResponse.redirect(new URL("/protected", request.url));
+    // If authenticated and on root, redirect to dashboard
+    if (!user.error && path === "/") {
+      if (userRole === "pharmacy") {
+        return NextResponse.redirect(
+          new URL("/pharmacy/dashboard", request.url)
+        );
+      } else if (userRole === "user") {
+        return NextResponse.redirect(new URL("/user/dashboard", request.url));
+      }
+    }
+
+    // If authenticated and accessing a route not matching their role, redirect to their dashboard
+    if (!user.error) {
+      if (userRole === "pharmacy" && path.startsWith("/user")) {
+        return NextResponse.redirect(
+          new URL("/pharmacy/dashboard", request.url)
+        );
+      } else if (userRole === "user" && path.startsWith("/pharmacy")) {
+        return NextResponse.redirect(new URL("/user/dashboard", request.url));
+      }
     }
 
     return response;
