@@ -17,13 +17,9 @@ import { Pill, ArrowLeft } from "lucide-react";
 export default async function UserSignUpPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | undefined };
+  searchParams: Promise<Message>;
 }) {
-  const messageParam = searchParams["message"];
-  const message: Message | undefined = messageParam
-    ? { message: messageParam }
-    : undefined;
-  // Only allow user sign-up
+  const message = await searchParams;
   const userType = "user";
 
   return (
@@ -72,6 +68,7 @@ export default async function UserSignUpPage({
           <CardContent>
             <form action={signUpAction} className="space-y-4">
               <input type="hidden" name="userType" value={userType} />
+              {message && <FormMessage message={message} />}
               <div>
                 <Label htmlFor="name">Full Name</Label>
                 <Input id="name" name="name" required />
@@ -111,7 +108,6 @@ export default async function UserSignUpPage({
               >
                 Create Account
               </SubmitButton>
-              {message && <FormMessage message={message} />}
               <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Already have an account?{" "}

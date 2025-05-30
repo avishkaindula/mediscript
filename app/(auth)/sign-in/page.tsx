@@ -16,9 +16,12 @@ import { signInAction } from "@/app/actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 
-export default async function SignInPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
-  const messageParam = searchParams["message"];
-  const message: Message | undefined = messageParam ? { message: messageParam } : undefined;
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<Message>;
+}) {
+  const message = await searchParams;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
@@ -48,6 +51,7 @@ export default async function SignInPage({ searchParams }: { searchParams: { [ke
           </CardHeader>
           <CardContent>
             <form action={signInAction} className="space-y-4">
+              {message && <FormMessage message={message} />}
               <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -76,7 +80,6 @@ export default async function SignInPage({ searchParams }: { searchParams: { [ke
               <SubmitButton pendingText="Signing in..." className="w-full">
                 Sign In
               </SubmitButton>
-              {message && <FormMessage message={message} />}
               <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Don't have an account?{" "}
