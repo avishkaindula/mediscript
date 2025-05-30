@@ -1,10 +1,7 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,38 +12,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
 import { Pill, ArrowLeft } from "lucide-react";
+import { signInAction } from "@/app/actions";
+import { FormMessage, Message } from "@/components/form-message";
+import { SubmitButton } from "@/components/submit-button";
 
 export default function SignInPage() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const formData = new FormData(e.target as HTMLFormElement);
-    const email = formData.get("email") as string;
-
-    // Simple demo logic - redirect based on email
-    if (email.includes("pharmacy")) {
-      router.push("/pharmacy/dashboard");
-    } else {
-      router.push("/user/dashboard");
-    }
-
-    toast({
-      title: "Welcome back!",
-      description: "You have been signed in successfully.",
-    });
-
-    setLoading(false);
-  };
+  const messageParam = searchParams.get("message");
+  const message: Message | undefined = messageParam
+    ? { message: messageParam }
+    : undefined;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
@@ -75,7 +52,7 @@ export default function SignInPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form action={signInAction} className="space-y-4">
               <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -101,19 +78,22 @@ export default function SignInPage() {
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Signing in..." : "Sign In"}
-              </Button>
+              <SubmitButton pendingText="Signing in..." className="w-full">
+                Sign In
+              </SubmitButton>
+              {message && <FormMessage message={message} />}
+              <div className="mt-4 text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Don't have an account?{" "}
+                  <Link
+                    href="/sign-up"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Sign up
+                  </Link>
+                </p>
+              </div>
             </form>
-
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account?{" "}
-                <Link href="/sign-up" className="text-blue-600 hover:underline">
-                  Sign up
-                </Link>
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
