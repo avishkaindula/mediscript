@@ -374,7 +374,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/how-it-works"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     How It Works
                   </Link>
@@ -382,7 +382,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/help"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Help Center
                   </Link>
@@ -390,7 +390,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/sign-up"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Sign Up
                   </Link>
@@ -398,7 +398,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/sign-in"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Sign In
                   </Link>
@@ -412,7 +412,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/about"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     About Us
                   </Link>
@@ -420,7 +420,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/contact"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Contact
                   </Link>
@@ -428,7 +428,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/privacy"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Privacy Policy
                   </Link>
@@ -436,7 +436,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/terms"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Terms of Service
                   </Link>
@@ -450,7 +450,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/help"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     FAQ
                   </Link>
@@ -458,7 +458,7 @@ export default function LandingPage() {
                 <li>
                   <Link
                     href="/contact"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Contact Support
                   </Link>
@@ -466,7 +466,7 @@ export default function LandingPage() {
                 <li>
                   <a
                     href="mailto:support@mediscript.com"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     support@mediscript.com
                   </a>
