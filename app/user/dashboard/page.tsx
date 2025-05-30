@@ -22,7 +22,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 const prescriptions = [
   {
     id: 1,
-    uploadDate: "2024-05-28",
+    uploadDate: "2025-05-28",
     status: "pending",
     images: 3,
     note: "Urgent - needed for tonight",
@@ -32,7 +32,7 @@ const prescriptions = [
   },
   {
     id: 2,
-    uploadDate: "2024-05-27",
+    uploadDate: "2025-05-27",
     status: "quoted",
     images: 2,
     note: "Regular medication refill",
@@ -53,7 +53,7 @@ const prescriptions = [
   },
   {
     id: 3,
-    uploadDate: "2024-05-25",
+    uploadDate: "2025-05-25",
     status: "completed",
     images: 1,
     note: "Blood pressure medication",

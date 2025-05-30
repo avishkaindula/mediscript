@@ -26,7 +26,7 @@ const prescriptions = [
   {
     id: 1,
     patientName: "John Doe",
-    uploadDate: "2024-05-28",
+    uploadDate: "2025-05-28",
     status: "pending",
     images: 3,
     note: "Urgent - needed for tonight",
@@ -38,7 +38,7 @@ const prescriptions = [
   {
     id: 2,
     patientName: "Jane Smith",
-    uploadDate: "2024-05-27",
+    uploadDate: "2025-05-27",
     status: "pending",
     images: 2,
     note: "Regular medication refill",
@@ -50,7 +50,7 @@ const prescriptions = [
   {
     id: 3,
     patientName: "Mike Johnson",
-    uploadDate: "2024-05-26",
+    uploadDate: "2025-05-26",
     status: "quoted",
     images: 1,
     note: "Blood pressure medication",

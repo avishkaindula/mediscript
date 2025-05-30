@@ -127,7 +127,7 @@ export default function AboutPage() {
           <Card>
             <CardContent className="p-8">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                MediScript was founded in 2024 with a simple yet powerful
+                MediScript was founded in 2025 with a simple yet powerful
                 vision: to make healthcare more accessible and transparent. Our
                 team of healthcare professionals, technology experts, and
                 patient advocates came together to address the common

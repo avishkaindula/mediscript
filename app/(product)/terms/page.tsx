@@ -37,7 +37,7 @@ export default function TermsPage() {
             our service, you agree to these terms and conditions.
           </p>
           <p className="text-sm text-muted-foreground mt-4">
-            Last updated: January 1, 2024
+            Last updated: January 1, 2025
           </p>
         </div>
 
