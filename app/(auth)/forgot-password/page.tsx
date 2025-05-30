@@ -12,17 +12,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Pill, ArrowLeft } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { forgotPasswordAction } from "@/app/actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 
-export default function ForgotPasswordPage() {
-  const searchParams = useSearchParams();
-  const messageParam = searchParams.get("message");
-  const message: Message | undefined = messageParam
-    ? { message: messageParam }
-    : undefined;
+export default async function ForgotPasswordPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
+  const messageParam = searchParams["message"];
+  const message: Message | undefined = messageParam ? { message: messageParam } : undefined;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">

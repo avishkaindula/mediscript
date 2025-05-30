@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,13 +16,9 @@ import { signInAction } from "@/app/actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 
-export default function SignInPage() {
-  const searchParams = useSearchParams();
-
-  const messageParam = searchParams.get("message");
-  const message: Message | undefined = messageParam
-    ? { message: messageParam }
-    : undefined;
+export default async function SignInPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
+  const messageParam = searchParams["message"];
+  const message: Message | undefined = messageParam ? { message: messageParam } : undefined;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">

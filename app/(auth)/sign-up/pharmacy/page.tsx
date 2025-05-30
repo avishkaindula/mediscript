@@ -50,10 +50,24 @@ export default async function PharmacySignUpPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Create Pharmacy Account</CardTitle>
-            <CardDescription>
-              Join MediScript as a pharmacy partner
+            <CardTitle className="text-center mb-4">
+              Sign Up as Pharmacy
+            </CardTitle>
+            <CardDescription className="text-center">
+              Register your pharmacy to join MediScript as a partner and serve
+              more patients.
             </CardDescription>
+            <div className="text-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Want to sign up as a patient?{" "}
+                <Link
+                  href="/sign-up/user"
+                  className="font-semibold text-green-700 hover:underline"
+                >
+                  Patient Sign Up
+                </Link>
+              </span>
+            </div>
           </CardHeader>
           <CardContent>
             <form action={signUpAction} className="space-y-4">
