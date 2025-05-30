@@ -25,10 +25,13 @@ export default function Header() {
             <Link href="/sign-in">
               <Button variant="ghost">Sign In</Button>
             </Link>
-            <Link href="/sign-up">
+            <Link href="/sign-up/user">
               <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
                 Get Started
               </Button>
+            </Link>
+            <Link href="/sign-up/pharmacy">
+              <Button variant="outline">Pharmacy Sign Up</Button>
             </Link>
           </div>
         </div>

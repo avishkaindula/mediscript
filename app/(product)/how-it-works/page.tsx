@@ -261,7 +261,7 @@ export default function HowItWorksPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild>
-                  <Link href="/auth/signup">Create Free Account</Link>
+                  <Link href="/sign-up/user">Create Free Account</Link>
                 </Button>
                 <Button variant="outline" size="lg" asChild>
                   <Link href="/help">Learn More</Link>

@@ -155,7 +155,7 @@ export default function AboutPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild>
-                  <Link href="/auth/signup">Sign Up Today</Link>
+                  <Link href="/sign-up/user">Sign Up Today</Link>
                 </Button>
                 <Button variant="outline" size="lg" asChild>
                   <Link href="/contact">Contact Us</Link>

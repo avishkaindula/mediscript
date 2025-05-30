@@ -67,7 +67,7 @@ export default function LandingPage() {
               delivery.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/sign-up">
+              <Link href="/sign-up/user">
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
@@ -76,7 +76,7 @@ export default function LandingPage() {
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
-              <Link href="/sign-up?type=pharmacy">
+              <Link href="/sign-up/pharmacy">
                 <Button size="lg" variant="outline">
                   Join as Pharmacy
                 </Button>
@@ -314,13 +314,13 @@ export default function LandingPage() {
             needs
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/sign-up">
+            <Link href="/sign-up/user">
               <Button size="lg" variant="outline">
                 Get Started Today
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
-            <Link href="/sign-up?type=pharmacy">
+            <Link href="/sign-up/pharmacy">
               <Button size="lg" variant="outline">
                 Partner With Us
               </Button>
