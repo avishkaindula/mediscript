@@ -358,104 +358,127 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
-                  <Pill className="w-5 h-5 text-white" />
+                  <span className="text-white font-bold text-sm">M</span>
                 </div>
                 <span className="text-xl font-bold">MediScript</span>
               </div>
-              <p className="text-gray-500 dark:text-gray-400">
-                Revolutionizing prescription management with digital innovation.
+              <p className="text-gray-500 dark:text-gray-400 mb-4">
+                Making prescription management simple, transparent, and
+                affordable for everyone.
               </p>
             </div>
+
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-500 dark:text-gray-400">
                 <li>
                   <Link
-                    href="#"
-                    className="hover:text-gray-900 dark:hover:text-white"
+                    href="/how-it-works"
+                    className="hover:text-white transition-colors"
                   >
-                    Features
+                    How It Works
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
-                    className="hover:text-gray-900 dark:hover:text-white"
-                  >
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-gray-900 dark:hover:text-white"
-                  >
-                    Security
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-500 dark:text-gray-400">
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-gray-900 dark:hover:text-white"
-                  >
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-gray-900 dark:hover:text-white"
-                  >
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-gray-900 dark:hover:text-white"
-                  >
-                    Careers
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-500 dark:text-gray-400">
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-gray-900 dark:hover:text-white"
+                    href="/help"
+                    className="hover:text-white transition-colors"
                   >
                     Help Center
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
-                    className="hover:text-gray-900 dark:hover:text-white"
+                    href="/sign-up"
+                    className="hover:text-white transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/sign-in"
+                    className="hover:text-white transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-gray-500 dark:text-gray-400">
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors"
+                  >
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="hover:text-white transition-colors"
+                  >
+                    Contact
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="hover:text-white transition-colors"
                   >
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
-                    className="hover:text-gray-900 dark:hover:text-white"
+                    href="/terms"
+                    className="hover:text-white transition-colors"
                   >
                     Terms of Service
                   </Link>
                 </li>
               </ul>
             </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Support</h3>
+              <ul className="space-y-2 text-gray-500 dark:text-gray-400">
+                <li>
+                  <Link
+                    href="/help"
+                    className="hover:text-white transition-colors"
+                  >
+                    FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="hover:text-white transition-colors"
+                  >
+                    Contact Support
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="mailto:support@mediscript.com"
+                    className="hover:text-white transition-colors"
+                  >
+                    support@mediscript.com
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div className="border-t border-gray-300 dark:border-gray-800 mt-8 pt-8 text-center text-gray-500 dark:text-gray-400">
-            <p>&copy; 2025 MediScript. All rights reserved.</p>
+
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 dark:text-gray-400">
+            <p>
+              &copy; {new Date().getFullYear()} MediScript. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
