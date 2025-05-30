@@ -14,7 +14,6 @@ import {
   Search,
   DollarSign,
   CheckCircle,
-  ArrowRight,
 } from "lucide-react";
 
 export default function HowItWorksPage() {
@@ -74,7 +73,6 @@ export default function HowItWorksPage() {
                   <li>• Valid, unexpired prescription</li>
                 </ul>
               </CardContent>
-              <ArrowRight className="hidden lg:block absolute -right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-6 w-6" />
             </Card>
 
             {/* Step 2 */}
@@ -98,7 +96,6 @@ export default function HowItWorksPage() {
                   <li>• Usually within 2-4 hours</li>
                 </ul>
               </CardContent>
-              <ArrowRight className="hidden lg:block absolute -right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-6 w-6" />
             </Card>
 
             {/* Step 3 */}
@@ -122,7 +119,6 @@ export default function HowItWorksPage() {
                   <li>• Delivery options</li>
                 </ul>
               </CardContent>
-              <ArrowRight className="hidden lg:block absolute -right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-6 w-6" />
             </Card>
 
             {/* Step 4 */}
@@ -208,9 +204,6 @@ export default function HowItWorksPage() {
         <div className="mb-16">
           <Card className="max-w-4xl mx-auto">
             <CardHeader className="text-center">
-              <Badge variant="secondary" className="mb-4">
-                For Pharmacies
-              </Badge>
               <CardTitle className="text-2xl">Join Our Network</CardTitle>
               <CardDescription>
                 Connect with more patients and grow your business through our
