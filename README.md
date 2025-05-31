@@ -1,6 +1,6 @@
 # MediScript Prescription Management Web App
 
-**🌐 Hosted Demo:** [https://mediscript-two.vercel.app/](https://mediscript-two.vercel.app/)
+**🌐 Hosted Demo:** [https://mediscript-two.vercel.app](https://mediscript-two.vercel.app)
 
 **📹 Demo Video:** [Watch here](https://www.awesomescreenshot.com/video/40468286?key=619fb8fd25bd7a42cc710729d1ac5fde)
 
