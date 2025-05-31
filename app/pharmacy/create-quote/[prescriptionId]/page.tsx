@@ -16,11 +16,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, X, Send, FileText, ArrowLeft } from "lucide-react";
+import { Plus, X, Send, FileText } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import type { Tables } from "@/utils/supabase/types";
-import jsPDF from "jspdf";
 
 type Prescription = Tables<"prescriptions">;
 
@@ -219,44 +218,38 @@ export default function CreateQuotePage() {
       return;
     }
 
-    // Generate PDF (placeholder logic)
-    const doc = new jsPDF();
-    doc.text("Quotation", 10, 10);
-    doc.text(`Patient: ${patientName || "Unknown"}`, 10, 20);
-    doc.text(`Email: ${patientEmail || "Unknown"}`, 10, 30);
-    doc.text(`Phone: ${formatPhoneNumber(prescription.phone)}`, 10, 40);
-    doc.text(`Delivery Address: ${prescription.address}`, 10, 50);
-    doc.text(
-      `Preferred Delivery Time: ${prescription.preferred_time_slot}`,
-      10,
-      60
-    );
-    doc.text("Items:", 10, 70);
-    validItems.forEach((item, idx) => {
-      doc.text(
-        `${idx + 1}. ${item.drug} - ${item.quantity} - $${item.price} ${
-          item.notes ? "- " + item.notes : ""
-        }`,
-        10,
-        80 + idx * 10
-      );
-    });
-    doc.text(`Delivery Fee: $${deliveryFee}`, 10, 90 + validItems.length * 10);
-    doc.text(
-      `Estimated Delivery: ${estimatedDelivery}`,
-      10,
-      100 + validItems.length * 10
-    );
-    doc.text(`Notes: ${quotationNotes}`, 10, 110 + validItems.length * 10);
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
-    const userQuotationsLink = `${origin}/user/quotations`;
-    doc.text(
-      `Accept or reject this quotation: ${userQuotationsLink}`,
-      10,
-      120 + validItems.length * 10
-    );
-    const pdfBlob = doc.output("blob");
-    const pdfBuffer = await pdfBlob.arrayBuffer();
+    // Call API route to send email with PDF
+    try {
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const res = await fetch("/api/send-quotation-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientName,
+          patientEmail,
+          prescription,
+          items: validItems,
+          deliveryFee,
+          estimatedDelivery,
+          notes: quotationNotes,
+          origin,
+        }),
+      });
+      if (!res.ok) {
+        toast({
+          title: "Failed to send quotation email",
+          description: (await res.json()).error || "Unknown error",
+          variant: "destructive",
+        });
+      }
+    } catch (err: any) {
+      toast({
+        title: "Failed to send quotation email",
+        description: err.message,
+        variant: "destructive",
+      });
+    }
 
     toast({
       title: "Quotation sent successfully!",
