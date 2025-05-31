@@ -45,7 +45,6 @@ export default function PrescriptionsPage() {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("all");
   const supabase = createClient();
   // Modal and gallery state (single modal for all prescriptions)
   const [modalOpen, setModalOpen] = useState(false);
@@ -83,23 +82,13 @@ export default function PrescriptionsPage() {
     }
   };
 
-  // Determine the status for filtering
+  // Only filter by search (all prescriptions are pending)
   const filteredPrescriptions = prescriptions.filter((prescription) => {
-    const matchesSearch =
+    return (
       prescription.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       prescription.note?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prescription.phone?.toLowerCase().includes(searchQuery.toLowerCase());
-    let statusMatch = false;
-    if (selectedStatus === "all") statusMatch = true;
-    else if (selectedStatus === "pending")
-      statusMatch = prescription.quotes.length === 0;
-    else if (selectedStatus === "quoted")
-      statusMatch = prescription.quotes.length > 0;
-    else if (selectedStatus === "accepted")
-      statusMatch = prescription.quotes.some((q) => q.status === "accepted");
-    else if (selectedStatus === "rejected")
-      statusMatch = prescription.quotes.some((q) => q.status === "rejected");
-    return matchesSearch && statusMatch;
+      prescription.phone?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   });
 
   // Open modal for a prescription and load its images
@@ -155,7 +144,7 @@ export default function PrescriptionsPage() {
           View and manage all patient prescriptions
         </p>
       </header>
-      {/* Filters and Search */}
+      {/* Search Only */}
       <div className="mb-6 flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search
@@ -169,40 +158,7 @@ export default function PrescriptionsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex gap-4">
-          <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-            <SelectTrigger className="w-[180px]">
-              <div className="flex items-center gap-2">
-                <Filter size={16} />
-                <span>Filter by Status</span>
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="quoted">Quoted</SelectItem>
-              <SelectItem value="accepted">Accepted</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
-
-      {/* Tabs */}
-      <Tabs
-        defaultValue="all"
-        className="mb-6"
-        value={selectedStatus}
-        onValueChange={setSelectedStatus}
-      >
-        <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="quoted">Quoted</TabsTrigger>
-          <TabsTrigger value="accepted">Accepted</TabsTrigger>
-          <TabsTrigger value="rejected">Rejected</TabsTrigger>
-        </TabsList>
-      </Tabs>
 
       {/* Prescriptions List */}
       <div className="grid gap-4">
