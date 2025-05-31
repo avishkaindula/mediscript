@@ -28,6 +28,7 @@ export async function POST(request: Request) {
         <li><b>Patient:</b> ${patientName || "(hidden)"}</li>
         <li><b>Address:</b> ${prescription.address}</li>
         <li><b>Phone:</b> ${prescription.phone}</li>
+        <li><b>Preferred Date:</b> ${prescription.preferred_date || "-"}</li>
         <li><b>Preferred Delivery:</b> ${prescription.preferred_time_slot}</li>
         <li><b>Note:</b> ${prescription.note || "-"}</li>
       </ul>

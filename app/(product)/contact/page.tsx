@@ -12,8 +12,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Phone, MapPin, Clock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ContactPage() {
+  const { toast } = useToast();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-8">
@@ -86,7 +89,18 @@ export default function ContactPage() {
                 />
               </div>
 
-              <Button className="w-full">Send Message</Button>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  toast({
+                    title: "Message sent!",
+                    description:
+                      "Thank you for reaching out. We'll get back to you soon.",
+                  });
+                }}
+              >
+                Send Message
+              </Button>
             </CardContent>
           </Card>
 

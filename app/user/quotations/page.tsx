@@ -61,6 +61,7 @@ export default function QuotationsPage() {
     Record<string, PharmacyProfile>
   >({});
   const [processing, setProcessing] = useState<string | null>(null); // quote id
+  const [patientName, setPatientName] = useState<string | null>(null);
 
   // Fetch all prescriptions for the current user and flatten all quotes
   useEffect(() => {
@@ -77,6 +78,13 @@ export default function QuotationsPage() {
           return;
         }
         const userId = userData.user.id;
+        // Fetch patient name
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("name")
+          .eq("id", userId)
+          .single();
+        setPatientName(profile?.name || null);
         const { data: prescriptions, error: prescError } = await supabase
           .from("prescriptions")
           .select("*, quotes(*)")
@@ -193,7 +201,7 @@ export default function QuotationsPage() {
           body: JSON.stringify({
             pharmacyEmail: pharmacy.email,
             pharmacyName: pharmacy.name,
-            patientName: quote.prescription.user_id, // Optionally fetch patient name if needed
+            patientName: patientName,
             prescription: quote.prescription,
             quote,
             status: newStatus,
