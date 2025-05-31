@@ -253,255 +253,272 @@ export default function PharmacyDashboard() {
             </Button>
           </Link>
         </div>
-
-        <div className="grid gap-4">
-          {prescriptions.map((prescription) => (
-            <Card
-              key={prescription.id}
-              className="hover:shadow-md transition-shadow"
-            >
-              <CardContent className="p-4 md:p-6">
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
-                      <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-                        {prescription.patientProfile?.name || "Unknown Patient"}
-                      </h3>
-                      <Badge
-                        className={getStatusColor(
-                          prescription.status ?? "pending"
-                        )}
-                      >
-                        {(prescription.status ?? "pending")
-                          .charAt(0)
-                          .toUpperCase() +
-                          (prescription.status ?? "pending").slice(1)}
-                      </Badge>
-                      <span className="text-sm text-gray-500">
-                        {new Date(prescription.created_at).toLocaleDateString()}
-                      </span>
+        {loading ? (
+          <div className="grid gap-4">
+            {/* Loading state can be handled here if needed */}
+          </div>
+        ) : prescriptions.length === 0 ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                No prescriptions yet
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                New prescriptions will appear here as soon as they are uploaded by users.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4">
+            {prescriptions.map((prescription) => (
+              <Card
+                key={prescription.id}
+                className="hover:shadow-md transition-shadow"
+              >
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                        <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                          {prescription.patientProfile?.name || "Unknown Patient"}
+                        </h3>
+                        <Badge
+                          className={getStatusColor(
+                            prescription.status ?? "pending"
+                          )}
+                        >
+                          {(prescription.status ?? "pending")
+                            .charAt(0)
+                            .toUpperCase() +
+                            (prescription.status ?? "pending").slice(1)}
+                        </Badge>
+                        <span className="text-sm text-gray-500">
+                          {new Date(prescription.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-gray-900 dark:text-white mb-1 truncate">
+                        {prescription.note}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                        {Array.isArray(prescription.files) &&
+                        prescription.files.every((f) => typeof f === "object")
+                          ? prescription.files.length
+                          : 0}{" "}
+                        images • Delivery: {prescription.preferred_time_slot}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                        {prescription.address} • {prescription.phone}
+                      </p>
                     </div>
-                    <p className="text-gray-900 dark:text-white mb-1 truncate">
-                      {prescription.note}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                      {Array.isArray(prescription.files) &&
-                      prescription.files.every((f) => typeof f === "object")
-                        ? prescription.files.length
-                        : 0}{" "}
-                      images • Delivery: {prescription.preferred_time_slot}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                      {prescription.address} • {prescription.phone}
-                    </p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full sm:w-auto"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
-                        <DialogHeader>
-                          <DialogTitle>
-                            Prescription Details -{" "}
-                            {prescription.patientProfile?.name ||
-                              "Unknown Patient"}
-                          </DialogTitle>
-                          <DialogDescription>
-                            Review prescription and create quotation
-                          </DialogDescription>
-                        </DialogHeader>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          {/* Prescription Images */}
-                          <div>
-                            <h3 className="font-semibold mb-4">
-                              Prescription Images
-                            </h3>
-                            <div className="space-y-4">
-                              <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                                <div className="text-center">
-                                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                                  <p className="text-sm text-gray-500">
-                                    Main Prescription
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-4 gap-2">
-                                {Array.isArray(prescription.files) &&
-                                  prescription.files.map((_, i) => (
-                                    <div
-                                      key={i}
-                                      className="aspect-square bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
-                                    >
-                                      <FileText className="w-6 h-6 text-gray-400" />
-                                    </div>
-                                  ))}
-                              </div>
-                            </div>
-
-                            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                              <h4 className="font-medium mb-2">
-                                Patient Notes
-                              </h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                {prescription.note}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Quotation Form */}
-                          <div>
-                            <h3 className="font-semibold mb-4">
-                              Create Quotation
-                            </h3>
-                            <div className="space-y-4">
-                              {quotationItems.map((item, index) => (
-                                <div
-                                  key={index}
-                                  className="grid grid-cols-12 gap-2 items-end"
-                                >
-                                  <div className="col-span-5">
-                                    <Label
-                                      htmlFor={`drug-${index}`}
-                                      className="text-xs"
-                                    >
-                                      Drug
-                                    </Label>
-                                    <Input
-                                      id={`drug-${index}`}
-                                      placeholder="Medicine name"
-                                      value={item.drug}
-                                      onChange={(e) =>
-                                        updateQuotationItem(
-                                          index,
-                                          "drug",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="text-sm"
-                                    />
-                                  </div>
-                                  <div className="col-span-3">
-                                    <Label
-                                      htmlFor={`quantity-${index}`}
-                                      className="text-xs"
-                                    >
-                                      Quantity
-                                    </Label>
-                                    <Input
-                                      id={`quantity-${index}`}
-                                      placeholder="Qty"
-                                      value={item.quantity}
-                                      onChange={(e) =>
-                                        updateQuotationItem(
-                                          index,
-                                          "quantity",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="text-sm"
-                                    />
-                                  </div>
-                                  <div className="col-span-3">
-                                    <Label
-                                      htmlFor={`price-${index}`}
-                                      className="text-xs"
-                                    >
-                                      Amount
-                                    </Label>
-                                    <Input
-                                      id={`price-${index}`}
-                                      type="number"
-                                      step="0.01"
-                                      placeholder="0.00"
-                                      value={item.price}
-                                      onChange={(e) =>
-                                        updateQuotationItem(
-                                          index,
-                                          "price",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="text-sm"
-                                    />
-                                  </div>
-                                  <div className="col-span-1">
-                                    {quotationItems.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() =>
-                                          removeQuotationItem(index)
-                                        }
-                                        className="h-8 w-8"
-                                      >
-                                        ×
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={addQuotationItem}
-                                className="w-full"
-                              >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Item
-                              </Button>
-
-                              <div className="border-t pt-4">
-                                <div className="flex justify-between items-center text-lg font-semibold">
-                                  <span>Total:</span>
-                                  <span>${calculateTotal()}</span>
-                                </div>
-                              </div>
-
-                              <Link
-                                href={`/pharmacy/create-quote/${prescription.id}`}
-                              >
-                                <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
-                                  <Send className="w-4 h-4 mr-2" />
-                                  Send Quotation
-                                </Button>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-
-                    {prescription.quotes.length === 0 &&
-                      (prescription.status ?? "pending") === "pending" && (
-                        <Link
-                          href={`/pharmacy/create-quote/${prescription.id}`}
-                          className="w-full sm:w-auto"
-                        >
+                    <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
+                      <Dialog>
+                        <DialogTrigger asChild>
                           <Button
+                            variant="outline"
                             size="sm"
-                            className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 w-full"
+                            className="w-full sm:w-auto"
                           >
-                            Create Quote
+                            <Eye className="w-4 h-4 mr-2" />
+                            View
                           </Button>
-                        </Link>
-                      )}
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+                          <DialogHeader>
+                            <DialogTitle>
+                              Prescription Details -{" "}
+                              {prescription.patientProfile?.name ||
+                                "Unknown Patient"}
+                            </DialogTitle>
+                            <DialogDescription>
+                              Review prescription and create quotation
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Prescription Images */}
+                            <div>
+                              <h3 className="font-semibold mb-4">
+                                Prescription Images
+                              </h3>
+                              <div className="space-y-4">
+                                <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                                  <div className="text-center">
+                                    <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                                    <p className="text-sm text-gray-500">
+                                      Main Prescription
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-4 gap-2">
+                                  {Array.isArray(prescription.files) &&
+                                    prescription.files.map((_, i) => (
+                                      <div
+                                        key={i}
+                                        className="aspect-square bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
+                                      >
+                                        <FileText className="w-6 h-6 text-gray-400" />
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
+
+                              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <h4 className="font-medium mb-2">
+                                  Patient Notes
+                                </h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  {prescription.note}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Quotation Form */}
+                            <div>
+                              <h3 className="font-semibold mb-4">
+                                Create Quotation
+                              </h3>
+                              <div className="space-y-4">
+                                {quotationItems.map((item, index) => (
+                                  <div
+                                    key={index}
+                                    className="grid grid-cols-12 gap-2 items-end"
+                                  >
+                                    <div className="col-span-5">
+                                      <Label
+                                        htmlFor={`drug-${index}`}
+                                        className="text-xs"
+                                      >
+                                        Drug
+                                      </Label>
+                                      <Input
+                                        id={`drug-${index}`}
+                                        placeholder="Medicine name"
+                                        value={item.drug}
+                                        onChange={(e) =>
+                                          updateQuotationItem(
+                                            index,
+                                            "drug",
+                                            e.target.value
+                                          )
+                                        }
+                                        className="text-sm"
+                                      />
+                                    </div>
+                                    <div className="col-span-3">
+                                      <Label
+                                        htmlFor={`quantity-${index}`}
+                                        className="text-xs"
+                                      >
+                                        Quantity
+                                      </Label>
+                                      <Input
+                                        id={`quantity-${index}`}
+                                        placeholder="Qty"
+                                        value={item.quantity}
+                                        onChange={(e) =>
+                                          updateQuotationItem(
+                                            index,
+                                            "quantity",
+                                            e.target.value
+                                          )
+                                        }
+                                        className="text-sm"
+                                      />
+                                    </div>
+                                    <div className="col-span-3">
+                                      <Label
+                                        htmlFor={`price-${index}`}
+                                        className="text-xs"
+                                      >
+                                        Amount
+                                      </Label>
+                                      <Input
+                                        id={`price-${index}`}
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="0.00"
+                                        value={item.price}
+                                        onChange={(e) =>
+                                          updateQuotationItem(
+                                            index,
+                                            "price",
+                                            e.target.value
+                                          )
+                                        }
+                                        className="text-sm"
+                                      />
+                                    </div>
+                                    <div className="col-span-1">
+                                      {quotationItems.length > 1 && (
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="icon"
+                                          onClick={() =>
+                                            removeQuotationItem(index)
+                                          }
+                                          className="h-8 w-8"
+                                        >
+                                          ×
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={addQuotationItem}
+                                  className="w-full"
+                                >
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  Add Item
+                                </Button>
+
+                                <div className="border-t pt-4">
+                                  <div className="flex justify-between items-center text-lg font-semibold">
+                                    <span>Total:</span>
+                                    <span>${calculateTotal()}</span>
+                                  </div>
+                                </div>
+
+                                <Link
+                                  href={`/pharmacy/create-quote/${prescription.id}`}
+                                >
+                                  <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+                                    <Send className="w-4 h-4 mr-2" />
+                                    Send Quotation
+                                  </Button>
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+
+                      {prescription.quotes.length === 0 &&
+                        (prescription.status ?? "pending") === "pending" && (
+                          <Link
+                            href={`/pharmacy/create-quote/${prescription.id}`}
+                            className="w-full sm:w-auto"
+                          >
+                            <Button
+                              size="sm"
+                              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 w-full"
+                            >
+                              Create Quote
+                            </Button>
+                          </Link>
+                        )}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
