@@ -44,10 +44,17 @@ type Prescription = Tables<"prescriptions"> & {
 export default function PrescriptionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [activeTab, setActiveTab] = useState("all");
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
+
+  // Modal and gallery state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalPrescription, setModalPrescription] =
+    useState<Prescription | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [loadingImages, setLoadingImages] = useState(false);
 
   useEffect(() => {
     const fetchPrescriptions = async () => {
@@ -77,7 +84,7 @@ export default function PrescriptionsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Determine the status for filtering (no quoted tab)
+  // Filtering logic: only use selectedStatus
   const filteredPrescriptions = prescriptions.filter((prescription) => {
     const matchesSearch =
       (prescription.note || "")
@@ -90,18 +97,55 @@ export default function PrescriptionsPage() {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
     let statusMatch = false;
-    if (selectedStatus === "all" || activeTab === "all") statusMatch = true;
-    else if (selectedStatus === "pending" || activeTab === "pending")
-      statusMatch =
-        prescription.quotes?.length === 0 ||
-        prescription.status === null ||
-        prescription.status === "pending";
-    else if (selectedStatus === "completed" || activeTab === "completed")
-      statusMatch =
-        prescription.status === "completed" ||
-        prescription.quotes?.some((q) => q.status === "accepted");
+    if (selectedStatus === "all") {
+      statusMatch = true;
+    } else if (selectedStatus === "pending") {
+      statusMatch = prescription.quotes?.length === 0;
+    } else if (selectedStatus === "completed") {
+      statusMatch = prescription.quotes?.some((q) => q.status === "accepted");
+    }
     return matchesSearch && statusMatch;
   });
+
+  // Modal image gallery logic (copied from pharmacy/prescriptions/page.tsx)
+  const handleOpenModal = async (prescription: Prescription) => {
+    setModalPrescription(prescription);
+    setModalOpen(true);
+    setImageUrls([]);
+    setSelectedImage(0);
+    setLoadingImages(true);
+    let files: { path?: string; filename?: string }[] = [];
+    if (Array.isArray(prescription.files)) {
+      files = prescription.files as { path?: string; filename?: string }[];
+    }
+    files = files.filter((f) => f.path);
+    const urls: string[] = [];
+    for (const file of files) {
+      try {
+        const { data } = await supabase.storage
+          .from("prescriptions")
+          .createSignedUrl(file.path!, 60 * 60);
+        if (data?.signedUrl) {
+          urls.push(data.signedUrl);
+        } else {
+          urls.push("");
+        }
+      } catch (e) {
+        urls.push("");
+      }
+    }
+    setImageUrls(urls);
+    setSelectedImage(0);
+    setLoadingImages(false);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setModalPrescription(null);
+    setImageUrls([]);
+    setSelectedImage(0);
+    setLoadingImages(false);
+  };
 
   const getStatusColor = (status: string | null) => {
     switch (status) {
@@ -172,8 +216,8 @@ export default function PrescriptionsPage() {
       <Tabs
         defaultValue="all"
         className="mb-6"
-        onValueChange={setActiveTab}
-        value={activeTab}
+        value={selectedStatus}
+        onValueChange={setSelectedStatus}
       >
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
@@ -263,12 +307,20 @@ export default function PrescriptionsPage() {
                     )}
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
-                    <Dialog>
+                    <Dialog
+                      open={
+                        modalOpen && modalPrescription?.id === prescription.id
+                      }
+                      onOpenChange={(open) => {
+                        if (!open) handleCloseModal();
+                      }}
+                    >
                       <DialogTrigger asChild>
                         <Button
                           variant="outline"
                           size="sm"
                           className="w-full sm:w-auto"
+                          onClick={() => handleOpenModal(prescription)}
                         >
                           <Eye className="w-4 h-4 mr-2" />
                           View Details
@@ -284,7 +336,6 @@ export default function PrescriptionsPage() {
                             ).toLocaleDateString()}
                           </DialogDescription>
                         </DialogHeader>
-
                         <div className="space-y-6">
                           {/* Prescription Images */}
                           <div>
@@ -292,27 +343,64 @@ export default function PrescriptionsPage() {
                               Prescription Images
                             </h3>
                             <div className="space-y-4">
-                              <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                                <div className="text-center">
-                                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                                  <p className="text-sm text-gray-500">
-                                    Main Prescription
-                                  </p>
+                              {/* Main image view */}
+                              {loadingImages ? (
+                                <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                                  <div className="flex flex-col items-center justify-center">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-400 border-t-transparent mb-2"></div>
+                                    <p className="text-sm text-gray-500">
+                                      Loading images...
+                                    </p>
+                                  </div>
                                 </div>
-                              </div>
-                              {/* Thumbnails for additional images */}
-                              <div className="grid grid-cols-4 gap-2">
-                                {Array.isArray(prescription.files) &&
-                                  prescription.files.length > 1 &&
-                                  prescription.files.slice(1).map((_, i) => (
-                                    <div
-                                      key={i}
-                                      className="aspect-square bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
+                              ) : imageUrls.length > 0 &&
+                                imageUrls[selectedImage] ? (
+                                <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                                  <img
+                                    src={imageUrls[selectedImage]}
+                                    alt={`Prescription image ${
+                                      selectedImage + 1
+                                    }`}
+                                    className="object-contain max-h-[350px] w-full h-full"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                                  <div className="text-center">
+                                    <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                                    <p className="text-sm text-gray-500">
+                                      No Images
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+                              {/* Thumbnails */}
+                              {imageUrls.length > 1 && (
+                                <div className="flex gap-2 mt-2 justify-center">
+                                  {imageUrls.map((url, idx) => (
+                                    <button
+                                      key={idx}
+                                      type="button"
+                                      className={`border rounded-lg overflow-hidden w-16 h-16 flex items-center justify-center ${
+                                        selectedImage === idx
+                                          ? "ring-2 ring-blue-500"
+                                          : "border-gray-300 dark:border-gray-700"
+                                      }`}
+                                      onClick={() => setSelectedImage(idx)}
                                     >
-                                      <FileText className="w-6 h-6 text-gray-400" />
-                                    </div>
+                                      {url ? (
+                                        <img
+                                          src={url}
+                                          alt={`Thumbnail ${idx + 1}`}
+                                          className="object-cover w-full h-full"
+                                        />
+                                      ) : (
+                                        <FileText className="w-6 h-6 text-gray-400" />
+                                      )}
+                                    </button>
                                   ))}
-                              </div>
+                                </div>
+                              )}
                             </div>
                           </div>
 
@@ -436,20 +524,6 @@ export default function PrescriptionsPage() {
                               </div>
                             </div>
                           )}
-
-                          {/* Actions */}
-                          <div className="flex justify-end space-x-3">
-                            {prescription.status === "pending" && (
-                              <Button variant="outline" size="sm">
-                                Cancel Prescription
-                              </Button>
-                            )}
-                            {prescription.quotes?.length > 0 && (
-                              <Link href="/user/quotations">
-                                <Button size="sm">View All Quotations</Button>
-                              </Link>
-                            )}
-                          </div>
                         </div>
                       </DialogContent>
                     </Dialog>
