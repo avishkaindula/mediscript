@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, X, ImageIcon } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import { createClient } from "@/utils/supabase/client";
 
 export default function UploadPrescription() {
   const router = useRouter();
@@ -25,6 +27,10 @@ export default function UploadPrescription() {
   const [images, setImages] = useState<File[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const supabase = createClient();
+
+  // Store uploaded file info for DB
+  const [uploadedFiles, setUploadedFiles] = useState<{ path: string; filename: string }[]>([]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -43,6 +49,34 @@ export default function UploadPrescription() {
     setImages(images.filter((_, i) => i !== index));
   };
 
+  // Upload a single file to Supabase Storage using signed upload URL
+  const uploadPrescriptionImage = async (file: File) => {
+    // 1. Get file extension
+    const ext = file.name.split('.').pop();
+    // 2. Get current user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+    // 3. Generate unique filename
+    const filename = `${uuidv4()}.${ext}`;
+    const path = `private/${user.id}/${filename}`;
+    // 4. Get signed upload URL
+    const { data, error } = await supabase
+      .storage
+      .from("prescriptions")
+      .createSignedUploadUrl(path);
+    if (error || !data) throw new Error(error?.message || "Failed to get signed upload URL");
+    // 5. Upload file to signed URL
+    const uploadRes = await fetch(data.signedUrl, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type },
+    });
+    if (!uploadRes.ok) throw new Error("Upload failed");
+    // 6. Return file info
+    console.log(path, filename);
+    return { path, filename };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (images.length === 0) {
@@ -53,20 +87,30 @@ export default function UploadPrescription() {
       });
       return;
     }
-
     setLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    toast({
-      title: "Prescription uploaded successfully!",
-      description:
-        "Pharmacies will review your prescription and send quotations soon.",
-    });
-
-    setLoading(false);
-    router.push("/user/dashboard");
+    try {
+      // Upload all images and collect file info
+      const uploaded = [];
+      for (const file of images) {
+        const fileInfo = await uploadPrescriptionImage(file);
+        uploaded.push(fileInfo);
+      }
+      setUploadedFiles(uploaded);
+      // TODO: Save uploaded file info to prescriptions table here
+      toast({
+        title: "Prescription uploaded successfully!",
+        description: "Pharmacies will review your prescription and send quotations soon.",
+      });
+      setLoading(false);
+      router.push("/user/dashboard");
+    } catch (err: any) {
+      toast({
+        title: "Upload failed",
+        description: err.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
   };
 
   return (

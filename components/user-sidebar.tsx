@@ -59,14 +59,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           <ThemeToggle />
         </div>
         <form action={signOutAction}>
-          <Button
+        <Button
             type="submit"
-            variant="ghost"
-            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+          variant="ghost"
+          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Sign Out
+        </Button>
         </form>
       </div>
     </div>
