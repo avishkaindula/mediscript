@@ -56,15 +56,16 @@ export default function PrescriptionsPage() {
   const [loadingImages, setLoadingImages] = useState(false);
 
   useEffect(() => {
-    const fetchPrescriptions = async () => {
-      const { data, error } = await supabase
+    const fetchPendingPrescriptions = async () => {
+      const { data } = await supabase
         .from("prescriptions")
         .select("*, quotes(*)")
+        .eq("status", "pending")
         .order("created_at", { ascending: false });
       if (data) setPrescriptions(data as Prescription[]);
       setLoading(false);
     };
-    fetchPrescriptions();
+    fetchPendingPrescriptions();
   }, []);
 
   const getStatusColor = (status: string) => {
