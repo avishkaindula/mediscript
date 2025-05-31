@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,71 +25,13 @@ export default function UploadPrescription() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
-
   // Store uploaded file info for DB and preview
   const [uploadedFiles, setUploadedFiles] = useState<
     { path: string; filename: string; previewUrl: string }[]
   >([]);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Handle image selection and upload
-  const handleImagesChange = async (files: File[]) => {
-    setIsUploading(true);
-    const newUploads: { path: string; filename: string; previewUrl: string }[] =
-      [];
-    // Get current user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      toast({ title: "Not authenticated", variant: "destructive" });
-      setIsUploading(false);
-      return;
-    }
-    for (const file of files) {
-      const ext = file.name.split(".").pop();
-      const filename = `${uuidv4()}.${ext}`;
-      const path = `private/${user.id}/${filename}`;
-      // Get signed upload URL
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("prescriptions")
-        .createSignedUploadUrl(path);
-      if (uploadError || !uploadData) {
-        toast({
-          title: "Upload error",
-          description: uploadError?.message,
-          variant: "destructive",
-        });
-        continue;
-      }
-      // Upload file
-      const uploadRes = await fetch(uploadData.signedUrl, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type },
-      });
-      if (!uploadRes.ok) {
-        toast({ title: "Upload failed", variant: "destructive" });
-        continue;
-      }
-      // Get signed download URL for preview
-      const { data: previewData, error: previewError } = await supabase.storage
-        .from("prescriptions")
-        .createSignedUrl(path, 60 * 60); // 1 hour
-      if (previewError || !previewData) {
-        toast({
-          title: "Preview error",
-          description: previewError?.message,
-          variant: "destructive",
-        });
-        continue;
-      }
-      newUploads.push({ path, filename, previewUrl: previewData.signedUrl });
-    }
-    setUploadedFiles(newUploads);
-    setIsUploading(false);
-  };
+  // No upload logic here! Only receive uploaded file info from dropzone
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,7 +45,7 @@ export default function UploadPrescription() {
     }
     setLoading(true);
     try {
-      // TODO: Save uploadedFiles.map(f => f.filename) and other form data to prescriptions table here
+      // TODO: Save uploadedFiles (already uploaded) and other form data to prescriptions table here
       toast({
         title: "Prescription uploaded successfully!",
         description:
@@ -138,12 +80,12 @@ export default function UploadPrescription() {
             <div className="mb-2">
               <h2 className="text-lg font-bold">Prescription Images</h2>
               <p className="text-sm text-gray-500">
-                Upload up to 5 clear images of your prescription (JPG, PNG, PDF)
+                Upload up to 5 clear images of your prescription (JPG, PNG)
               </p>
             </div>
             <ImageUploader
               maxImages={5}
-              onImagesChange={handleImagesChange}
+              onImagesChange={setUploadedFiles}
               onUploadStateChange={setIsUploading}
               isUploading={isUploading}
             />
