@@ -4,7 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu, Home, FileText, Users, BarChart3, Settings, LogOut, Pill, Upload, User as UserIcon, ClipboardList } from "lucide-react";
+import {
+  Menu,
+  Home,
+  FileText,
+  BarChart3,
+  LogOut,
+  Pill,
+  Upload,
+  User as UserIcon,
+  ClipboardList,
+} from "lucide-react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -15,8 +25,7 @@ const pharmacyNavigation = [
   { name: "Dashboard", href: "/pharmacy/dashboard", icon: Home },
   { name: "Prescriptions", href: "/pharmacy/prescriptions", icon: FileText },
   { name: "Quotations", href: "/pharmacy/quotations", icon: BarChart3 },
-  { name: "Patients", href: "/pharmacy/patients", icon: Users },
-  { name: "Settings", href: "/pharmacy/settings", icon: Settings },
+  { name: "Profile", href: "/pharmacy/profile", icon: UserIcon },
 ];
 
 // User navigation
@@ -26,10 +35,15 @@ const userNavigation = [
   { name: "Prescriptions", href: "/user/prescriptions", icon: ClipboardList },
   { name: "Quotations", href: "/user/quotations", icon: FileText },
   { name: "Profile", href: "/user/profile", icon: UserIcon },
-  { name: "Settings", href: "/user/settings", icon: Settings },
 ];
 
-function MobileSidebarContent({ navigation, onNavigate }: { navigation: any[]; onNavigate: () => void }) {
+function MobileSidebarContent({
+  navigation,
+  onNavigate,
+}: {
+  navigation: any[];
+  onNavigate: () => void;
+}) {
   const pathname = usePathname();
   return (
     <div className="flex flex-col w-64 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
@@ -63,18 +77,20 @@ function MobileSidebarContent({ navigation, onNavigate }: { navigation: any[]; o
       {/* Footer */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600 dark:text-gray-400">Theme</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            Theme
+          </span>
           <ThemeToggle />
         </div>
         <form action={signOutAction}>
-        <Button
+          <Button
             type="submit"
-          variant="ghost"
-          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Sign Out
-        </Button>
+            variant="ghost"
+            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
         </form>
       </div>
     </div>
@@ -86,7 +102,12 @@ export function UserMobileHeader() {
   return (
     <div className="md:hidden bg-white dark:bg-gray-800 shadow-sm border-b">
       <div className="flex items-center px-4 py-4">
-        <Button variant="ghost" size="icon" className="mr-2" onClick={() => setOpen(true)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mr-2"
+          onClick={() => setOpen(true)}
+        >
           <Menu className="w-5 h-5" />
         </Button>
         <div className="flex-1 flex justify-center">
@@ -100,7 +121,10 @@ export function UserMobileHeader() {
           <VisuallyHidden>
             <SheetTitle>Sidebar Navigation</SheetTitle>
           </VisuallyHidden>
-          <MobileSidebarContent navigation={userNavigation} onNavigate={() => setOpen(false)} />
+          <MobileSidebarContent
+            navigation={userNavigation}
+            onNavigate={() => setOpen(false)}
+          />
         </SheetContent>
       </Sheet>
     </div>
@@ -112,7 +136,12 @@ export function PharmacyMobileHeader() {
   return (
     <div className="md:hidden bg-white dark:bg-gray-800 shadow-sm border-b">
       <div className="flex items-center px-4 py-4">
-        <Button variant="ghost" size="icon" className="mr-2" onClick={() => setOpen(true)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mr-2"
+          onClick={() => setOpen(true)}
+        >
           <Menu className="w-5 h-5" />
         </Button>
         <div className="flex-1 flex justify-center">
@@ -126,9 +155,12 @@ export function PharmacyMobileHeader() {
           <VisuallyHidden>
             <SheetTitle>Sidebar Navigation</SheetTitle>
           </VisuallyHidden>
-          <MobileSidebarContent navigation={pharmacyNavigation} onNavigate={() => setOpen(false)} />
+          <MobileSidebarContent
+            navigation={pharmacyNavigation}
+            onNavigate={() => setOpen(false)}
+          />
         </SheetContent>
       </Sheet>
     </div>
   );
-} 
+}
