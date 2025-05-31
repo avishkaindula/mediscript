@@ -19,67 +19,81 @@ import { useToast } from "@/hooks/use-toast";
 import { Upload, X, ImageIcon } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { createClient } from "@/utils/supabase/client";
+import ImageUploader from "@/components/ui/image-dropzone";
 
 export default function UploadPrescription() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<File[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const supabase = createClient();
 
-  // Store uploaded file info for DB
-  const [uploadedFiles, setUploadedFiles] = useState<{ path: string; filename: string }[]>([]);
+  // Store uploaded file info for DB and preview
+  const [uploadedFiles, setUploadedFiles] = useState<
+    { path: string; filename: string; previewUrl: string }[]
+  >([]);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (images.length + files.length > 5) {
-      toast({
-        title: "Too many images",
-        description: "You can upload a maximum of 5 images.",
-        variant: "destructive",
-      });
+  // Handle image selection and upload
+  const handleImagesChange = async (files: File[]) => {
+    setIsUploading(true);
+    const newUploads: { path: string; filename: string; previewUrl: string }[] =
+      [];
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      toast({ title: "Not authenticated", variant: "destructive" });
+      setIsUploading(false);
       return;
     }
-    setImages([...images, ...files]);
-  };
-
-  const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
-  };
-
-  // Upload a single file to Supabase Storage using signed upload URL
-  const uploadPrescriptionImage = async (file: File) => {
-    // 1. Get file extension
-    const ext = file.name.split('.').pop();
-    // 2. Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (!user) throw new Error("User not authenticated");
-    // 3. Generate unique filename
-    const filename = `${uuidv4()}.${ext}`;
-    const path = `private/${user.id}/${filename}`;
-    // 4. Get signed upload URL
-    const { data, error } = await supabase
-      .storage
-      .from("prescriptions")
-      .createSignedUploadUrl(path);
-    if (error || !data) throw new Error(error?.message || "Failed to get signed upload URL");
-    // 5. Upload file to signed URL
-    const uploadRes = await fetch(data.signedUrl, {
-      method: "PUT",
-      body: file,
-      headers: { "Content-Type": file.type },
-    });
-    if (!uploadRes.ok) throw new Error("Upload failed");
-    // 6. Return file info
-    console.log(path, filename);
-    return { path, filename };
+    for (const file of files) {
+      const ext = file.name.split(".").pop();
+      const filename = `${uuidv4()}.${ext}`;
+      const path = `private/${user.id}/${filename}`;
+      // Get signed upload URL
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("prescriptions")
+        .createSignedUploadUrl(path);
+      if (uploadError || !uploadData) {
+        toast({
+          title: "Upload error",
+          description: uploadError?.message,
+          variant: "destructive",
+        });
+        continue;
+      }
+      // Upload file
+      const uploadRes = await fetch(uploadData.signedUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      });
+      if (!uploadRes.ok) {
+        toast({ title: "Upload failed", variant: "destructive" });
+        continue;
+      }
+      // Get signed download URL for preview
+      const { data: previewData, error: previewError } = await supabase.storage
+        .from("prescriptions")
+        .createSignedUrl(path, 60 * 60); // 1 hour
+      if (previewError || !previewData) {
+        toast({
+          title: "Preview error",
+          description: previewError?.message,
+          variant: "destructive",
+        });
+        continue;
+      }
+      newUploads.push({ path, filename, previewUrl: previewData.signedUrl });
+    }
+    setUploadedFiles(newUploads);
+    setIsUploading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (images.length === 0) {
+    if (uploadedFiles.length === 0) {
       toast({
         title: "No images uploaded",
         description: "Please upload at least one prescription image.",
@@ -89,17 +103,11 @@ export default function UploadPrescription() {
     }
     setLoading(true);
     try {
-      // Upload all images and collect file info
-      const uploaded = [];
-      for (const file of images) {
-        const fileInfo = await uploadPrescriptionImage(file);
-        uploaded.push(fileInfo);
-      }
-      setUploadedFiles(uploaded);
-      // TODO: Save uploaded file info to prescriptions table here
+      // TODO: Save uploadedFiles.map(f => f.filename) and other form data to prescriptions table here
       toast({
         title: "Prescription uploaded successfully!",
-        description: "Pharmacies will review your prescription and send quotations soon.",
+        description:
+          "Pharmacies will review your prescription and send quotations soon.",
       });
       setLoading(false);
       router.push("/user/dashboard");
@@ -123,10 +131,9 @@ export default function UploadPrescription() {
           Upload your prescription images and delivery details
         </p>
       </header>
-      {/* Main profile content */}
       <div className="max-w-2xl mx-auto space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Image Upload (Modal Trigger) */}
+          {/* Image Upload */}
           <div className="rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 mb-2">
             <div className="mb-2">
               <h2 className="text-lg font-bold">Prescription Images</h2>
@@ -134,20 +141,13 @@ export default function UploadPrescription() {
                 Upload up to 5 clear images of your prescription (JPG, PNG, PDF)
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <Button type="button" onClick={() => setModalOpen(true)}>
-                Upload Images
-              </Button>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {images.length === 0
-                  ? "No images selected"
-                  : `${images.length} image${
-                      images.length > 1 ? "s" : ""
-                    } selected`}
-              </span>
-            </div>
+            <ImageUploader
+              maxImages={5}
+              onImagesChange={handleImagesChange}
+              onUploadStateChange={setIsUploading}
+              isUploading={isUploading}
+            />
           </div>
-
           {/* Prescription Details */}
           <div className="rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 mb-2">
             <div className="mb-2">
@@ -236,7 +236,7 @@ export default function UploadPrescription() {
             </Button>
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || isUploading}
               className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
             >
               {loading ? "Uploading..." : "Upload Prescription"}
@@ -244,77 +244,6 @@ export default function UploadPrescription() {
           </div>
         </form>
       </div>
-
-      {/* Custom Modal for Image Upload */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-md p-6 relative">
-            <button
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-white"
-              onClick={() => setModalOpen(false)}
-              aria-label="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <h2 className="text-lg font-bold mb-2">Upload Images</h2>
-            <p className="text-sm text-gray-500 mb-4">
-              You can upload up to 5 images (JPG, PNG, PDF).
-            </p>
-            <div className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*,.pdf"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="modal-file-upload"
-                  ref={fileInputRef}
-                />
-                <label htmlFor="modal-file-upload" className="cursor-pointer">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-gray-900 dark:text-white">
-                    Click to upload files
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    or drag and drop your prescription images here
-                  </p>
-                </label>
-              </div>
-              {images.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-32 overflow-y-auto mt-4">
-                  {images.map((image, index) => (
-                    <div key={index} className="relative group w-20 h-20">
-                      <div className="bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center w-full h-full">
-                        <ImageIcon className="w-8 h-8 text-gray-400" />
-                      </div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate w-full">
-                        {image.name}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className="flex justify-end gap-2 mt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setModalOpen(false)}
-                >
-                  Done
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
