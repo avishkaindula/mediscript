@@ -169,15 +169,56 @@ export default function CreateQuotePage() {
 
     setLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Get current user (pharmacy)
+    const supabase = createClient();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
+      toast({
+        title: "Not authenticated",
+        description: "You must be logged in as a pharmacy to submit a quote.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+    const pharmacy_id = userData.user.id;
 
+    // Ensure prescription id is present
+    if (!prescription?.id) {
+      toast({
+        title: "Prescription not loaded",
+        description: "Cannot submit quote: prescription not found.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
+    // Insert quote into Supabase
+    const { error: quoteError } = await supabase.from("quotes").insert([
+      {
+        prescription_id: prescription.id,
+        pharmacy_id,
+        items: validItems as any, // cast to Json
+        delivery_fee: Number.parseFloat(deliveryFee),
+        estimated_delivery: estimatedDelivery,
+        notes: quotationNotes,
+        status: "pending",
+      },
+    ]);
+    setLoading(false);
+    if (quoteError) {
+      toast({
+        title: "Failed to submit quotation",
+        description: quoteError.message,
+        variant: "destructive",
+      });
+      return;
+    }
     toast({
       title: "Quotation sent successfully!",
-      description: `Quotation for ${prescription?.user_id} has been sent. The patient will be notified via email.`,
+      description: `Quotation for ${patientName || prescription.user_id} has been sent. The patient will be notified via email.`,
     });
-
-    setLoading(false);
     router.push("/pharmacy/quotations");
   };
 
