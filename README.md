@@ -1,5 +1,7 @@
 # MediScript Prescription Management Web App
 
+**🌐 Hosted Demo:** [https://mediscript-two.vercel.app/](https://mediscript-two.vercel.app/)
+
 This is a full-stack prescription management web application built with Next.js, React, TypeScript, and Supabase. It supports both user and pharmacy flows, including prescription uploads, quotations, and order management.
 
 ## Getting Started
