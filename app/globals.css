@@ -92,3 +92,29 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.dropzone {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 16px;
+  border: 1px solid #dddddd;
+  border-radius: 2px;
+  background-color: #fff;
+  transition: 0.3s ease all;
+}
+.dark .dropzone {
+  border: 1px solid #333333;
+  background-color: #18181b;
+}
+
+/* For dropzone icon/image dark mode support */
+.dropzone img, .dropzone svg {
+  transition: filter 0.3s;
+}
+.dark .dropzone img, .dark .dropzone svg {
+  filter: invert(1) brightness(1.2) contrast(0.9);
+}
