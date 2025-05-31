@@ -16,6 +16,7 @@ const PUBLIC_PATHS = [
   "/terms",
   "/",
   "/auth/callback",
+  "/auth/callback?redirect_to=/reset-password",
 ];
 
 export const updateSession = async (request: NextRequest) => {
