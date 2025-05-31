@@ -27,8 +27,10 @@ export async function POST(request: Request) {
     y += 8;
     doc.text(`Email: ${patientEmail}`, 14, y);
     y += 8;
-    doc.text(`Delivery Address: ${prescription.address}`, 14, y);
-    y += 8;
+    // Handle multi-line delivery address
+    const addressLines = doc.splitTextToSize(`Delivery Address: ${prescription.address}`, 180);
+    doc.text(addressLines, 14, y);
+    y += addressLines.length * 8;
     doc.text(`Preferred Delivery Time: ${prescription.preferred_time_slot}`, 14, y);
     y += 8;
     doc.text(`Phone: ${prescription.phone}`, 14, y);
