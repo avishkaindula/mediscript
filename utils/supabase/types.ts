@@ -56,6 +56,7 @@ export type Database = {
           address: string | null;
           avatar_url: string | null;
           dob: string | null;
+          email: string | null;
           id: string;
           license: string | null;
           name: string | null;
@@ -68,6 +69,7 @@ export type Database = {
           address?: string | null;
           avatar_url?: string | null;
           dob?: string | null;
+          email?: string | null;
           id: string;
           license?: string | null;
           name?: string | null;
@@ -80,6 +82,7 @@ export type Database = {
           address?: string | null;
           avatar_url?: string | null;
           dob?: string | null;
+          email?: string | null;
           id?: string;
           license?: string | null;
           name?: string | null;

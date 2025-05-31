@@ -20,6 +20,8 @@ import { Plus, X, Send, FileText, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import type { Tables } from "@/utils/supabase/types";
+import nodemailer from "nodemailer";
+import jsPDF from "jspdf";
 
 type Prescription = Tables<"prescriptions">;
 
@@ -52,6 +54,7 @@ export default function CreateQuotePage() {
   const [loadingImages, setLoadingImages] = useState(false);
   const [patientName, setPatientName] = useState<string | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const [patientEmail, setPatientEmail] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPrescription = async () => {
@@ -75,10 +78,11 @@ export default function CreateQuotePage() {
         const supabase = createClient();
         const { data } = await supabase
           .from("profiles")
-          .select("name")
+          .select("name, email")
           .eq("id", prescription.user_id)
           .single();
         setPatientName(data?.name || null);
+        setPatientEmail(data?.email || null);
         setLoadingProfile(false);
       };
       fetchProfile();
@@ -215,9 +219,82 @@ export default function CreateQuotePage() {
       });
       return;
     }
+
+    // Generate PDF (placeholder logic)
+    const doc = new jsPDF();
+    doc.text("Quotation", 10, 10);
+    doc.text(`Patient: ${patientName || "Unknown"}`, 10, 20);
+    doc.text(`Email: ${patientEmail || "Unknown"}`, 10, 30);
+    doc.text(`Phone: ${formatPhoneNumber(prescription.phone)}`, 10, 40);
+    doc.text(`Delivery Address: ${prescription.address}`, 10, 50);
+    doc.text(
+      `Preferred Delivery Time: ${prescription.preferred_time_slot}`,
+      10,
+      60
+    );
+    doc.text("Items:", 10, 70);
+    validItems.forEach((item, idx) => {
+      doc.text(
+        `${idx + 1}. ${item.drug} - ${item.quantity} - $${item.price} ${
+          item.notes ? "- " + item.notes : ""
+        }`,
+        10,
+        80 + idx * 10
+      );
+    });
+    doc.text(`Delivery Fee: $${deliveryFee}`, 10, 90 + validItems.length * 10);
+    doc.text(
+      `Estimated Delivery: ${estimatedDelivery}`,
+      10,
+      100 + validItems.length * 10
+    );
+    doc.text(`Notes: ${quotationNotes}`, 10, 110 + validItems.length * 10);
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const userQuotationsLink = `${origin}/user/quotations`;
+    doc.text(
+      `Accept or reject this quotation: ${userQuotationsLink}`,
+      10,
+      120 + validItems.length * 10
+    );
+    const pdfBlob = doc.output("blob");
+    const pdfBuffer = await pdfBlob.arrayBuffer();
+
+    // Send email with nodemailer
+    if (patientEmail) {
+      const transporter = nodemailer.createTransport({
+        // Configure your SMTP transport here
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT),
+        secure: false,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || "no-reply@example.com",
+        to: patientEmail,
+        subject: "Your Quotation is Ready",
+        text: `Dear ${
+          patientName || "User"
+        },\n\nA new quotation has been created for your prescription.\n\nYou can view, accept, or reject your quotation at: ${userQuotationsLink}\n\nThank you!\n\n--\nPharmacy Team`,
+        html: `<p>Dear ${
+          patientName || "User"
+        },</p><p>A new quotation has been created for your prescription.</p><p><a href="${userQuotationsLink}">View, accept, or reject your quotation</a></p><p>Thank you!<br/>Pharmacy Team</p>`,
+        attachments: [
+          {
+            filename: "quotation.pdf",
+            content: Buffer.from(pdfBuffer),
+            contentType: "application/pdf",
+          },
+        ],
+      });
+    }
     toast({
       title: "Quotation sent successfully!",
-      description: `Quotation for ${patientName || prescription.user_id} has been sent. The patient will be notified via email.`,
+      description: `Quotation for ${
+        patientName || prescription.user_id
+      } has been sent. The patient will be notified via email.`,
     });
     router.push("/pharmacy/quotations");
   };
@@ -350,6 +427,14 @@ export default function CreateQuotePage() {
                         {loadingProfile
                           ? "Loading..."
                           : patientName || "Unknown"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Email</p>
+                      <p className="font-medium">
+                        {loadingProfile
+                          ? "Loading..."
+                          : patientEmail || "Unknown"}
                       </p>
                     </div>
                     <div>

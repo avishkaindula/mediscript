@@ -50,6 +50,7 @@ export const signUpAction = async (formData: FormData) => {
         license,
         registration,
         userType,
+        email,
       },
     },
   });
