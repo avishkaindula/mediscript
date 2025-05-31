@@ -57,6 +57,8 @@ This project was designed, developed, and deployed in just **2 and a half days**
 
 The app features robust **role-based access control (RBAC)** and **Supabase Row Level Security (RLS)** policies to ensure data privacy and secure separation between user and pharmacy roles. This means users and pharmacies only see and interact with the data relevant to their role, with all access enforced at the database level.
 
+The authentication flow is fully configured, including **email verification** and a working **forgot password** functionality, ensuring a secure and user-friendly sign-in/sign-up experience.
+
 This demonstrates the power of modern full-stack tools and a focused workflow.
 
 Feel free to explore both user and pharmacy flows. If you have any questions or issues, please open an issue or contact the maintainer. 
