@@ -50,7 +50,13 @@ export default function UploadPrescription() {
         .single();
       if (error || !data) return;
       setAddress(data.address || "");
-      setPhone(data.phone || "");
+      // Normalize phone to E.164 (no spaces)
+      let phoneValue = data.phone || "";
+      if (phoneValue && phoneValue.startsWith("+")) {
+        const parsed = parsePhoneNumber(phoneValue);
+        phoneValue = parsed ? parsed.number : phoneValue.replace(/\s+/g, "");
+      }
+      setPhone(phoneValue);
     };
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
