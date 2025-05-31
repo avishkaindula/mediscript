@@ -31,6 +31,16 @@ type Prescription = Tables<"prescriptions"> & {
   quotes: Tables<"quotes">[];
 };
 
+// Helper to format Sri Lankan phone numbers (e.g., +94713768901 -> +94 71 376 8901)
+function formatPhoneNumber(phone: string) {
+  // Only format if it matches +94XXXXXXXXX
+  const match = phone.match(/^\+94(\d{2})(\d{3})(\d{4})$/);
+  if (match) {
+    return `+94 ${match[1]} ${match[2]} ${match[3]}`;
+  }
+  return phone;
+}
+
 export default function PrescriptionsPage() {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
@@ -371,7 +381,9 @@ export default function PrescriptionsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Phone</p>
-                    <p className="font-medium">{modalPrescription.phone}</p>
+                    <p className="font-medium">
+                      {formatPhoneNumber(modalPrescription.phone)}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Delivery Address</p>

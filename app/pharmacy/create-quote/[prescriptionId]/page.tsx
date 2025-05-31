@@ -1,118 +1,209 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
-import { PharmacySidebar } from "@/components/pharmacy-sidebar"
-import { Plus, X, Send, FileText, ArrowLeft } from "lucide-react"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { Plus, X, Send, FileText, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { createClient } from "@/utils/supabase/client";
+import type { Tables } from "@/utils/supabase/types";
 
-// Dummy prescription data - in real app this would come from API
-const prescriptionData = {
-  1: {
-    id: 1,
-    patientName: "John Doe",
-    uploadDate: "2025-05-28",
-    note: "Urgent - needed for tonight",
-    deliveryAddress: "123 Main St, City",
-    deliveryTime: "6:00 PM - 8:00 PM",
-    phone: "+1 234-567-8900",
-    images: 3,
-  },
-  2: {
-    id: 2,
-    patientName: "Jane Smith",
-    uploadDate: "2025-05-27",
-    note: "Regular medication refill",
-    deliveryAddress: "456 Oak Ave, City",
-    deliveryTime: "2:00 PM - 4:00 PM",
-    phone: "+1 234-567-8901",
-    images: 2,
-  },
+type Prescription = Tables<"prescriptions">;
+
+// Helper to format Sri Lankan phone numbers (e.g., +94713768901 -> +94 71 376 8901)
+function formatPhoneNumber(phone: string) {
+  const match = phone.match(/^\+94(\d{2})(\d{3})(\d{4})$/);
+  if (match) {
+    return `+94 ${match[1]} ${match[2]} ${match[3]}`;
+  }
+  return phone;
 }
 
 export default function CreateQuotePage() {
-  const router = useRouter()
-  const params = useParams()
-  const { toast } = useToast()
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const params = useParams();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [prescription, setPrescription] = useState<Prescription | null>(null);
+  const [fetching, setFetching] = useState(true);
 
-  const prescriptionId = Number(params.prescriptionId)
-  const prescription = prescriptionData[prescriptionId as keyof typeof prescriptionData]
+  const [quotationItems, setQuotationItems] = useState([
+    { drug: "", quantity: "", price: "", notes: "" },
+  ]);
+  const [deliveryFee, setDeliveryFee] = useState("5.00");
+  const [estimatedDelivery, setEstimatedDelivery] = useState("2-3 hours");
+  const [quotationNotes, setQuotationNotes] = useState("");
 
-  const [quotationItems, setQuotationItems] = useState([{ drug: "", quantity: "", price: "", notes: "" }])
-  const [deliveryFee, setDeliveryFee] = useState("5.00")
-  const [estimatedDelivery, setEstimatedDelivery] = useState("2-3 hours")
-  const [quotationNotes, setQuotationNotes] = useState("")
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [loadingImages, setLoadingImages] = useState(false);
+  const [patientName, setPatientName] = useState<string | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+
+  useEffect(() => {
+    const fetchPrescription = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("prescriptions")
+        .select("*")
+        .eq("id", String(params.prescriptionId))
+        .single();
+      if (data) setPrescription(data as Prescription);
+      setFetching(false);
+    };
+    fetchPrescription();
+  }, [String(params.prescriptionId)]);
+
+  // Fetch patient profile when prescription is loaded
+  useEffect(() => {
+    if (prescription?.user_id) {
+      setLoadingProfile(true);
+      const fetchProfile = async () => {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from("profiles")
+          .select("name")
+          .eq("id", prescription.user_id)
+          .single();
+        setPatientName(data?.name || null);
+        setLoadingProfile(false);
+      };
+      fetchProfile();
+    }
+  }, [prescription?.user_id]);
+
+  // Fetch prescription images when prescription is loaded
+  useEffect(() => {
+    if (prescription?.files) {
+      setLoadingImages(true);
+      let files: { path?: string; filename?: string }[] = [];
+      if (Array.isArray(prescription.files)) {
+        files = prescription.files as { path?: string; filename?: string }[];
+      }
+      files = files.filter((f) => f.path);
+      const supabase = createClient();
+      Promise.all(
+        files.map(async (file) => {
+          try {
+            const { data } = await supabase.storage
+              .from("prescriptions")
+              .createSignedUrl(file.path!, 60 * 60);
+            return data?.signedUrl || "";
+          } catch {
+            return "";
+          }
+        })
+      ).then((urls) => {
+        setImageUrls(urls);
+        setSelectedImage(0);
+        setLoadingImages(false);
+      });
+    } else {
+      setImageUrls([]);
+      setSelectedImage(0);
+      setLoadingImages(false);
+    }
+  }, [prescription?.files]);
 
   const addQuotationItem = () => {
-    setQuotationItems([...quotationItems, { drug: "", quantity: "", price: "", notes: "" }])
-  }
+    setQuotationItems([
+      ...quotationItems,
+      { drug: "", quantity: "", price: "", notes: "" },
+    ]);
+  };
 
   const updateQuotationItem = (index: number, field: string, value: string) => {
-    const updated = quotationItems.map((item, i) => (i === index ? { ...item, [field]: value } : item))
-    setQuotationItems(updated)
-  }
+    const updated = quotationItems.map((item, i) =>
+      i === index ? { ...item, [field]: value } : item
+    );
+    setQuotationItems(updated);
+  };
 
   const removeQuotationItem = (index: number) => {
     if (quotationItems.length > 1) {
-      setQuotationItems(quotationItems.filter((_, i) => i !== index))
+      setQuotationItems(quotationItems.filter((_, i) => i !== index));
     }
-  }
+  };
 
   const calculateSubtotal = () => {
     return quotationItems.reduce((total, item) => {
-      const price = Number.parseFloat(item.price) || 0
-      return total + price
-    }, 0)
-  }
+      const price = Number.parseFloat(item.price) || 0;
+      return total + price;
+    }, 0);
+  };
 
   const calculateTotal = () => {
-    return calculateSubtotal() + Number.parseFloat(deliveryFee)
-  }
+    return calculateSubtotal() + Number.parseFloat(deliveryFee);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Validate that at least one item has all required fields
-    const validItems = quotationItems.filter((item) => item.drug.trim() && item.quantity.trim() && item.price.trim())
+    const validItems = quotationItems.filter(
+      (item) => item.drug.trim() && item.quantity.trim() && item.price.trim()
+    );
 
     if (validItems.length === 0) {
       toast({
         title: "Invalid quotation",
-        description: "Please add at least one complete item with drug name, quantity, and price.",
+        description:
+          "Please add at least one complete item with drug name, quantity, and price.",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     toast({
       title: "Quotation sent successfully!",
-      description: `Quotation for ${prescription?.patientName} has been sent. The patient will be notified via email.`,
-    })
+      description: `Quotation for ${prescription?.user_id} has been sent. The patient will be notified via email.`,
+    });
 
-    setLoading(false)
-    router.push("/pharmacy/quotations")
+    setLoading(false);
+    router.push("/pharmacy/quotations");
+  };
+
+  if (fetching) {
+    return (
+      <Card>
+        <CardContent className="p-12 text-center">
+          <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            Loading prescription...
+          </h3>
+        </CardContent>
+      </Card>
+    );
   }
 
   if (!prescription) {
     return (
       <>
         <header className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Prescription not found</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">The prescription you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Prescription not found
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            The prescription you're looking for doesn't exist.
+          </p>
         </header>
         <Card>
           <CardContent className="p-12 text-center">
@@ -123,14 +214,19 @@ export default function CreateQuotePage() {
           </CardContent>
         </Card>
       </>
-    )
+    );
   }
 
   return (
     <>
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create Quotation</h1>
-        <p className="text-gray-600 dark:text-gray-400">Create quotation for {prescription.patientName}</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Create Quotation
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          Create quotation for{" "}
+          {loadingProfile ? "Loading..." : patientName || "Unknown"}
+        </p>
       </header>
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -139,7 +235,9 @@ export default function CreateQuotePage() {
             <Card>
               <CardHeader>
                 <CardTitle>Prescription Details</CardTitle>
-                <CardDescription>Review the prescription information</CardDescription>
+                <CardDescription>
+                  Review the prescription information
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -147,22 +245,59 @@ export default function CreateQuotePage() {
                   <div>
                     <h4 className="font-medium mb-2">Prescription Images</h4>
                     <div className="space-y-2">
-                      <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                        <div className="text-center">
-                          <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                          <p className="text-sm text-gray-500">Main Prescription</p>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-4 gap-2">
-                        {Array.from({ length: prescription.images - 1 }).map((_, i) => (
-                          <div
-                            key={i}
-                            className="aspect-square bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
-                          >
-                            <FileText className="w-6 h-6 text-gray-400" />
+                      {/* Main image view */}
+                      {loadingImages ? (
+                        <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                          <div className="flex flex-col items-center justify-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-400 border-t-transparent mb-2"></div>
+                            <p className="text-sm text-gray-500">
+                              Loading images...
+                            </p>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ) : imageUrls.length > 0 && imageUrls[selectedImage] ? (
+                        <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                          <img
+                            src={imageUrls[selectedImage]}
+                            alt={`Prescription image ${selectedImage + 1}`}
+                            className="object-contain max-h-[350px] w-full h-full"
+                          />
+                        </div>
+                      ) : (
+                        <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                          <div className="text-center">
+                            <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                            <p className="text-sm text-gray-500">No Images</p>
+                          </div>
+                        </div>
+                      )}
+                      {/* Thumbnails */}
+                      {imageUrls.length > 1 && (
+                        <div className="flex gap-2 mt-2 justify-center">
+                          {imageUrls.map((url, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              className={`border rounded-lg overflow-hidden w-16 h-16 flex items-center justify-center ${
+                                selectedImage === idx
+                                  ? "ring-2 ring-blue-500"
+                                  : "border-gray-300 dark:border-gray-700"
+                              }`}
+                              onClick={() => setSelectedImage(idx)}
+                            >
+                              {url ? (
+                                <img
+                                  src={url}
+                                  alt={`Thumbnail ${idx + 1}`}
+                                  className="object-cover w-full h-full"
+                                />
+                              ) : (
+                                <FileText className="w-6 h-6 text-gray-400" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -170,26 +305,38 @@ export default function CreateQuotePage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-gray-500">Patient Name</p>
-                      <p className="font-medium">{prescription.patientName}</p>
+                      <p className="font-medium">
+                        {loadingProfile
+                          ? "Loading..."
+                          : patientName || "Unknown"}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Phone</p>
-                      <p className="font-medium">{prescription.phone}</p>
+                      <p className="font-medium">
+                        {formatPhoneNumber(prescription.phone)}
+                      </p>
                     </div>
                     <div className="col-span-2">
                       <p className="text-sm text-gray-500">Delivery Address</p>
-                      <p className="font-medium">{prescription.deliveryAddress}</p>
+                      <p className="font-medium">{prescription.address}</p>
                     </div>
                     <div className="col-span-2">
-                      <p className="text-sm text-gray-500">Preferred Delivery Time</p>
-                      <p className="font-medium">{prescription.deliveryTime}</p>
+                      <p className="text-sm text-gray-500">
+                        Preferred Delivery Time
+                      </p>
+                      <p className="font-medium">
+                        {prescription.preferred_time_slot}
+                      </p>
                     </div>
                   </div>
 
                   {/* Patient Notes */}
                   <div>
                     <p className="text-sm text-gray-500">Patient Notes</p>
-                    <p className="font-medium p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">{prescription.note}</p>
+                    <p className="font-medium p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      {prescription.note}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -201,7 +348,9 @@ export default function CreateQuotePage() {
             <Card>
               <CardHeader>
                 <CardTitle>Create Quotation</CardTitle>
-                <CardDescription>Add medications and pricing details</CardDescription>
+                <CardDescription>
+                  Add medications and pricing details
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -210,7 +359,10 @@ export default function CreateQuotePage() {
                     <Label className="text-base font-medium">Medications</Label>
                     <div className="space-y-4 mt-2">
                       {quotationItems.map((item, index) => (
-                        <div key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                        <div
+                          key={index}
+                          className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
+                        >
                           <div className="flex justify-between items-start mb-3">
                             <h4 className="font-medium">Item {index + 1}</h4>
                             {quotationItems.length > 1 && (
@@ -227,52 +379,89 @@ export default function CreateQuotePage() {
 
                           <div className="grid grid-cols-1 gap-3">
                             <div>
-                              <Label htmlFor={`drug-${index}`}>Medicine Name *</Label>
+                              <Label htmlFor={`drug-${index}`}>
+                                Medicine Name *
+                              </Label>
                               <Input
                                 id={`drug-${index}`}
                                 placeholder="e.g., Amoxicillin 500mg"
                                 value={item.drug}
-                                onChange={(e) => updateQuotationItem(index, "drug", e.target.value)}
+                                onChange={(e) =>
+                                  updateQuotationItem(
+                                    index,
+                                    "drug",
+                                    e.target.value
+                                  )
+                                }
                               />
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
                               <div>
-                                <Label htmlFor={`quantity-${index}`}>Quantity *</Label>
+                                <Label htmlFor={`quantity-${index}`}>
+                                  Quantity *
+                                </Label>
                                 <Input
                                   id={`quantity-${index}`}
                                   placeholder="e.g., 30 tablets"
                                   value={item.quantity}
-                                  onChange={(e) => updateQuotationItem(index, "quantity", e.target.value)}
+                                  onChange={(e) =>
+                                    updateQuotationItem(
+                                      index,
+                                      "quantity",
+                                      e.target.value
+                                    )
+                                  }
                                 />
                               </div>
                               <div>
-                                <Label htmlFor={`price-${index}`}>Amount ($) *</Label>
+                                <Label htmlFor={`price-${index}`}>
+                                  Amount ($) *
+                                </Label>
                                 <Input
                                   id={`price-${index}`}
                                   type="number"
                                   step="0.01"
                                   placeholder="0.00"
                                   value={item.price}
-                                  onChange={(e) => updateQuotationItem(index, "price", e.target.value)}
+                                  onChange={(e) =>
+                                    updateQuotationItem(
+                                      index,
+                                      "price",
+                                      e.target.value
+                                    )
+                                  }
                                 />
                               </div>
                             </div>
 
                             <div>
-                              <Label htmlFor={`notes-${index}`}>Notes (Optional)</Label>
+                              <Label htmlFor={`notes-${index}`}>
+                                Notes (Optional)
+                              </Label>
                               <Input
                                 id={`notes-${index}`}
                                 placeholder="Additional notes for this item"
                                 value={item.notes}
-                                onChange={(e) => updateQuotationItem(index, "notes", e.target.value)}
+                                onChange={(e) =>
+                                  updateQuotationItem(
+                                    index,
+                                    "notes",
+                                    e.target.value
+                                  )
+                                }
                               />
                             </div>
                           </div>
                         </div>
                       ))}
 
-                      <Button type="button" variant="outline" onClick={addQuotationItem} className="w-full">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addQuotationItem}
+                        className="w-full"
+                      >
                         <Plus className="w-4 h-4 mr-2" />
                         Add Another Item
                       </Button>
@@ -281,7 +470,9 @@ export default function CreateQuotePage() {
 
                   {/* Delivery Information */}
                   <div className="space-y-4">
-                    <Label className="text-base font-medium">Delivery Information</Label>
+                    <Label className="text-base font-medium">
+                      Delivery Information
+                    </Label>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="deliveryFee">Delivery Fee ($)</Label>
@@ -294,7 +485,9 @@ export default function CreateQuotePage() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="estimatedDelivery">Estimated Delivery</Label>
+                        <Label htmlFor="estimatedDelivery">
+                          Estimated Delivery
+                        </Label>
                         <Input
                           id="estimatedDelivery"
                           placeholder="e.g., 2-3 hours"
@@ -307,7 +500,9 @@ export default function CreateQuotePage() {
 
                   {/* Additional Notes */}
                   <div>
-                    <Label htmlFor="quotationNotes">Additional Notes (Optional)</Label>
+                    <Label htmlFor="quotationNotes">
+                      Additional Notes (Optional)
+                    </Label>
                     <Textarea
                       id="quotationNotes"
                       placeholder="Any additional information or special instructions..."
@@ -326,7 +521,9 @@ export default function CreateQuotePage() {
                       </div>
                       <div className="flex justify-between">
                         <span>Delivery Fee:</span>
-                        <span>${Number.parseFloat(deliveryFee).toFixed(2)}</span>
+                        <span>
+                          ${Number.parseFloat(deliveryFee).toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between font-semibold text-lg pt-2 border-t border-gray-200 dark:border-gray-700">
                         <span>Total:</span>
@@ -337,7 +534,12 @@ export default function CreateQuotePage() {
 
                   {/* Submit Button */}
                   <div className="flex space-x-3">
-                    <Button type="button" variant="outline" onClick={() => router.back()} className="flex-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => router.back()}
+                      className="flex-1"
+                    >
                       Cancel
                     </Button>
                     <Button
@@ -362,5 +564,5 @@ export default function CreateQuotePage() {
         </div>
       </div>
     </>
-  )
+  );
 }
