@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserSidebar } from "@/components/user-sidebar";
 import {
   FileText,
   Search,
@@ -14,7 +13,6 @@ import {
   Eye,
   Clock,
   CheckCircle,
-  Menu,
 } from "lucide-react";
 import {
   Dialog,
