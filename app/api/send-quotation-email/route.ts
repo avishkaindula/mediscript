@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export async function POST(request: Request) {
   try {
@@ -10,26 +11,65 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No email provided" }, { status: 400 });
     }
 
-    // Generate PDF
+    // Generate PDF with improved styling
     const doc = new jsPDF();
-    doc.text("Quotation", 10, 10);
-    doc.text(`Patient: ${patientName || "Unknown"}`, 10, 20);
-    doc.text(`Email: ${patientEmail}`, 10, 30);
-    doc.text(`Delivery Address: ${prescription.address}`, 10, 40);
-    doc.text(`Preferred Delivery Time: ${prescription.preferred_time_slot}`, 10, 50);
-    doc.text("Items:", 10, 60);
-    items.forEach((item: any, idx: number) => {
-      doc.text(
-        `${idx + 1}. ${item.drug} - ${item.quantity} - $${item.price} ${item.notes ? "- " + item.notes : ""}`,
-        10,
-        70 + idx * 10
-      );
+    let y = 20;
+
+    // Header
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("Quotation", 105, y, { align: "center" });
+    y += 12;
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Patient: ${patientName || "Unknown"}`, 14, y);
+    y += 8;
+    doc.text(`Email: ${patientEmail}`, 14, y);
+    y += 8;
+    doc.text(`Delivery Address: ${prescription.address}`, 14, y);
+    y += 8;
+    doc.text(`Preferred Delivery Time: ${prescription.preferred_time_slot}`, 14, y);
+    y += 8;
+    doc.text(`Phone: ${prescription.phone}`, 14, y);
+    y += 12;
+
+    // Table for items
+    autoTable(doc, {
+      startY: y,
+      head: [["#", "Medicine", "Quantity", "Price", "Notes"]],
+      body: items.map((item: any, idx: number) => [
+        idx + 1,
+        item.drug,
+        item.quantity,
+        `$${item.price}`,
+        item.notes || "",
+      ]),
+      theme: "striped",
+      headStyles: { fillColor: [41, 128, 185] }, // blue
     });
-    doc.text(`Delivery Fee: $${deliveryFee}`, 10, 80 + items.length * 10);
-    doc.text(`Estimated Delivery: ${estimatedDelivery}`, 10, 90 + items.length * 10);
-    doc.text(`Notes: ${notes}`, 10, 100 + items.length * 10);
-    const userQuotationsLink = `${origin}/user/quotations`;
-    doc.text(`Accept or reject this quotation: ${userQuotationsLink}`, 10, 110 + items.length * 10);
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // Delivery info
+    doc.setFont("helvetica", "bold");
+    doc.text(`Delivery Fee: $${deliveryFee}`, 14, y);
+    y += 8;
+    doc.text(`Estimated Delivery: ${estimatedDelivery}`, 14, y);
+    y += 8;
+    doc.setFont("helvetica", "normal");
+    doc.text(`Notes: ${notes}`, 14, y);
+    y += 12;
+
+    // Link
+    doc.setTextColor(41, 128, 185); // blue
+    doc.textWithLink(
+      "Accept or reject this quotation",
+      14,
+      y,
+      { url: `${origin}/user/quotations` }
+    );
+    doc.setTextColor(0, 0, 0);
+
     const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
 
     // Send email
@@ -45,8 +85,8 @@ export async function POST(request: Request) {
       from: process.env.EMAIL_USER,
       to: patientEmail,
       subject: "Your Quotation is Ready",
-      text: `Dear ${patientName || "User"},\n\nA new quotation has been created for your prescription.\n\nYou can view, accept, or reject your quotation at: ${userQuotationsLink}\n\nThank you!\n\n--\nPharmacy Team`,
-      html: `<p>Dear ${patientName || "User"},</p><p>A new quotation has been created for your prescription.</p><p><a href="${userQuotationsLink}">View, accept, or reject your quotation</a></p><p>Thank you!<br/>Pharmacy Team</p>`,
+      text: `Dear ${patientName || "User"},\n\nA new quotation has been created for your prescription.\n\nYou can view, accept, or reject your quotation at: ${origin}/user/quotations\n\nThank you!\n\n--\nPharmacy Team`,
+      html: `<p>Dear ${patientName || "User"},</p><p>A new quotation has been created for your prescription.</p><p><a href="${origin}/user/quotations" style="color:#2980b9;text-decoration:underline;">View, accept, or reject your quotation</a></p><p>Thank you!<br/>Pharmacy Team</p>`,
       attachments: [
         {
           filename: "quotation.pdf",
