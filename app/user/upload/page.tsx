@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import ImageUploader from "@/components/ui/image-dropzone";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { createClient } from "@/utils/supabase/client";
+import { parsePhoneNumber } from "react-phone-number-input";
 
 export default function UploadPrescription() {
   const router = useRouter();
@@ -36,6 +38,24 @@ export default function UploadPrescription() {
     "18-20": "6:00 PM - 8:00 PM",
   };
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData?.user) return;
+      const userId = userData.user.id;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("address, phone")
+        .eq("id", userId)
+        .single();
+      if (error || !data) return;
+      setAddress(data.address || "");
+      setPhone(data.phone || "");
+    };
+    fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (uploadedFiles.length === 0) {
@@ -60,6 +80,12 @@ export default function UploadPrescription() {
         setLoading(false);
         return;
       }
+      // Normalize phone to E.164 (no spaces)
+      let phoneToSave = phone;
+      if (phoneToSave && phoneToSave.startsWith("+")) {
+        const parsed = parsePhoneNumber(phoneToSave);
+        phoneToSave = parsed ? parsed.number : phoneToSave.replace(/\s+/g, "");
+      }
       const { error } = await supabase.from("prescriptions").insert([
         {
           user_id: user.id,
@@ -68,7 +94,7 @@ export default function UploadPrescription() {
           preferred_date: preferredDate,
           preferred_time_slot:
             timeSlotMap[preferredTimeSlot] || preferredTimeSlot,
-          phone,
+          phone: phoneToSave,
           files,
         },
       ]);
@@ -209,15 +235,16 @@ export default function UploadPrescription() {
               </div>
               <div>
                 <Label htmlFor="phone">Contact Number</Label>
-                <Input
+                <PhoneInput
                   id="phone"
                   name="phone"
-                  type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Your phone number for delivery coordination"
+                  onChange={setPhone}
+                  defaultCountry="LK"
+                  international
                   required
                   className="mt-1"
+                  placeholder="Your phone number for delivery coordination"
                 />
               </div>
             </div>
