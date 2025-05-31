@@ -82,7 +82,7 @@ export default async function SignInPage({
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Don't have an account?{" "}
                   <Link
-                    href="/sign-up"
+                    href="/sign-up/user"
                     className="text-blue-600 hover:underline"
                   >
                     Sign up
