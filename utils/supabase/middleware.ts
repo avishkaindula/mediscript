@@ -14,6 +14,7 @@ const PUBLIC_PATHS = [
   "/privacy",
   "/terms",
   "/",
+  "/auth/callback",
 ];
 
 export const updateSession = async (request: NextRequest) => {
