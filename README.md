@@ -43,11 +43,11 @@ You can use the following test accounts to log in without creating your own user
 
 ### User Login
 - **Email:** avishkaindula@gmail.com
-- **Password:** Qwer123;
+- **Password:** Qwer#123
 
 ### Pharmacy Login
 - **Email:** avishkaindularaja@outlook.com
-- **Password:** Qwer123;
+- **Password:** Qwer#123
 
 ---
 
