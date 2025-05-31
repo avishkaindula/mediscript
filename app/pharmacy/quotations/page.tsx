@@ -1,13 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PharmacySidebar } from "@/components/pharmacy-sidebar"
-import { FileText, Search, Filter, Eye, Clock, CheckCircle, XCircle } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  FileText,
+  Search,
+  Filter,
+  Eye,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,114 +22,135 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
-import { createClient } from "@/utils/supabase/client"
-import type { Tables } from "@/utils/supabase/types"
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
+import { createClient } from "@/utils/supabase/client";
+import type { Tables } from "@/utils/supabase/types";
 
-type Quote = Tables<"quotes"> & { prescription: Tables<"prescriptions">, patientName?: string | null };
+type Quote = Tables<"quotes"> & {
+  prescription: Tables<"prescriptions">;
+  patientName?: string | null;
+};
 
 export default function QuotationsPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState("all")
-  const [activeTab, setActiveTab] = useState("all")
-  const [quotes, setQuotes] = useState<Quote[]>([])
-  const [loading, setLoading] = useState(true)
-  const supabase = createClient()
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [activeTab, setActiveTab] = useState("all");
+  const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
 
   useEffect(() => {
     const fetchQuotes = async () => {
-      setLoading(true)
-      const { data: userData, error: userError } = await supabase.auth.getUser()
+      setLoading(true);
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
       if (userError || !userData?.user) {
-        setQuotes([])
-        setLoading(false)
-        return
+        setQuotes([]);
+        setLoading(false);
+        return;
       }
-      const userId = userData.user.id
+      const userId = userData.user.id;
       const { data, error } = await supabase
         .from("quotes")
         .select("*, prescription:prescription_id(*)")
         .eq("pharmacy_id", userId)
-        .order("created_at", { ascending: false })
+        .order("created_at", { ascending: false });
       if (error || !data) {
-        setQuotes([])
-        setLoading(false)
-        return
+        setQuotes([]);
+        setLoading(false);
+        return;
       }
       // Fetch patient names for all unique prescription.user_id
-      const prescriptionUserIds = Array.from(new Set((data as Quote[]).map((q) => q.prescription.user_id)))
-      let profileMap: Record<string, string | null> = {}
+      const prescriptionUserIds = Array.from(
+        new Set((data as Quote[]).map((q) => q.prescription.user_id))
+      );
+      let profileMap: Record<string, string | null> = {};
       if (prescriptionUserIds.length > 0) {
         const { data: profiles } = await supabase
           .from("profiles")
           .select("id, name")
-          .in("id", prescriptionUserIds)
+          .in("id", prescriptionUserIds);
         if (profiles) {
           profiles.forEach((profile) => {
-            profileMap[profile.id] = profile.name
-          })
+            profileMap[profile.id] = profile.name;
+          });
         }
       }
       // Attach patientName to each quote
       const withNames = (data as Quote[]).map((q) => ({
         ...q,
         patientName: profileMap[q.prescription.user_id] || null,
-      }))
-      setQuotes(withNames)
-      setLoading(false)
-    }
-    fetchQuotes()
+      }));
+      setQuotes(withNames);
+      setLoading(false);
+    };
+    fetchQuotes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const filteredQuotations = quotes.filter((quotation) => {
-    const matchesSearch = (quotation.patientName || "").toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = selectedStatus === "all" || quotation.status === selectedStatus
-    const matchesTab = activeTab === "all" || quotation.status === activeTab
-    return matchesSearch && matchesStatus && matchesTab
-  })
+    const matchesSearch = (quotation.patientName || "")
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      selectedStatus === "all" || quotation.status === selectedStatus;
+    const matchesTab = activeTab === "all" || quotation.status === activeTab;
+    return matchesSearch && matchesStatus && matchesTab;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800";
       case "accepted":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "rejected":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       case "completed":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "pending":
-        return <Clock className="w-4 h-4 mr-1" />
+        return <Clock className="w-4 h-4 mr-1" />;
       case "accepted":
-        return <CheckCircle className="w-4 h-4 mr-1" />
+        return <CheckCircle className="w-4 h-4 mr-1" />;
       case "rejected":
-        return <XCircle className="w-4 h-4 mr-1" />
+        return <XCircle className="w-4 h-4 mr-1" />;
       case "completed":
-        return <CheckCircle className="w-4 h-4 mr-1" />
+        return <CheckCircle className="w-4 h-4 mr-1" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <>
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quotations</h1>
-        <p className="text-gray-600 dark:text-gray-400">Track and manage all quotations sent to patients</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Quotations
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          Track and manage all quotations sent to patients
+        </p>
       </header>
       {/* Filters and Search */}
       <div className="mb-6 flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            size={18}
+          />
           <Input
             placeholder="Search by patient name..."
             className="pl-10"
@@ -166,19 +194,30 @@ export default function QuotationsPage() {
           <Card>
             <CardContent className="p-12 text-center">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No quotations found</h3>
-              <p className="text-gray-600 dark:text-gray-400">Try adjusting your search or filter criteria.</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                No quotations found
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Try adjusting your search or filter criteria.
+              </p>
             </CardContent>
           </Card>
         ) : (
           filteredQuotations.map((quotation) => {
             // Parse items safely
-            type ItemType = { drug?: string; quantity?: string; price?: string; amount?: number };
+            type ItemType = {
+              drug?: string;
+              quantity?: string;
+              price?: string;
+              amount?: number;
+            };
             function isItemType(item: any): item is ItemType {
               return (
                 item &&
                 typeof item === "object" &&
-                (typeof item.drug === "string" || typeof item.amount === "number" || typeof item.price === "string")
+                (typeof item.drug === "string" ||
+                  typeof item.amount === "number" ||
+                  typeof item.price === "string")
               );
             }
             let items: ItemType[] = [];
@@ -197,24 +236,41 @@ export default function QuotationsPage() {
             }, 0);
             const total = subtotal + (quotation.delivery_fee || 0);
             return (
-              <Card key={quotation.id} className="hover:shadow-md transition-shadow">
+              <Card
+                key={quotation.id}
+                className="hover:shadow-md transition-shadow"
+              >
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-4 mb-2">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">{quotation.patientName || "Unknown Patient"}</h3>
-                        <Badge className={getStatusColor(quotation.status ?? "pending")}>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">
+                          {quotation.patientName || "Unknown Patient"}
+                        </h3>
+                        <Badge
+                          className={getStatusColor(
+                            quotation.status ?? "pending"
+                          )}
+                        >
                           <div className="flex items-center">
                             {getStatusIcon(quotation.status ?? "pending")}
-                            <span>{(quotation.status ?? "pending").charAt(0).toUpperCase() + (quotation.status ?? "pending").slice(1)}</span>
+                            <span>
+                              {(quotation.status ?? "pending")
+                                .charAt(0)
+                                .toUpperCase() +
+                                (quotation.status ?? "pending").slice(1)}
+                            </span>
                           </div>
                         </Badge>
                         <span className="text-sm text-gray-500">
-                          Created: {new Date(quotation.created_at).toLocaleDateString()}
+                          Created:{" "}
+                          {new Date(quotation.created_at).toLocaleDateString()}
                         </span>
                       </div>
                       <div className="flex items-center space-x-4">
-                        <p className="text-gray-900 dark:text-white font-medium">${total.toFixed(2)}</p>
+                        <p className="text-gray-900 dark:text-white font-medium">
+                          ${total.toFixed(2)}
+                        </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           {items.length} items
                         </p>
@@ -232,27 +288,42 @@ export default function QuotationsPage() {
                           <DialogHeader>
                             <DialogTitle>Quotation Details</DialogTitle>
                             <DialogDescription>
-                              Quotation #{quotation.id} for {quotation.patientName || "Unknown Patient"}
+                              Quotation #{quotation.id} for{" "}
+                              {quotation.patientName || "Unknown Patient"}
                             </DialogDescription>
                           </DialogHeader>
 
                           <div className="space-y-6">
                             {/* Status and Dates */}
                             <div className="flex justify-between items-center">
-                              <Badge className={getStatusColor(quotation.status ?? "pending")}>
+                              <Badge
+                                className={getStatusColor(
+                                  quotation.status ?? "pending"
+                                )}
+                              >
                                 <div className="flex items-center">
                                   {getStatusIcon(quotation.status ?? "pending")}
-                                  <span>{(quotation.status ?? "pending").charAt(0).toUpperCase() + (quotation.status ?? "pending").slice(1)}</span>
+                                  <span>
+                                    {(quotation.status ?? "pending")
+                                      .charAt(0)
+                                      .toUpperCase() +
+                                      (quotation.status ?? "pending").slice(1)}
+                                  </span>
                                 </div>
                               </Badge>
                               <div className="text-sm text-gray-500">
-                                Created: {new Date(quotation.created_at).toLocaleDateString()}
+                                Created:{" "}
+                                {new Date(
+                                  quotation.created_at
+                                ).toLocaleDateString()}
                               </div>
                             </div>
 
                             {/* Items */}
                             <div>
-                              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Items</h3>
+                              <h3 className="font-medium text-gray-900 dark:text-white mb-2">
+                                Items
+                              </h3>
                               <div className="space-y-2">
                                 {items.map((item, index) => (
                                   <div
@@ -260,12 +331,18 @@ export default function QuotationsPage() {
                                     className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
                                   >
                                     <div>
-                                      <p className="font-medium text-gray-900 dark:text-white">{item.drug}</p>
-                                      <p className="text-sm text-gray-600 dark:text-gray-400">{item.quantity}</p>
+                                      <p className="font-medium text-gray-900 dark:text-white">
+                                        {item.drug}
+                                      </p>
+                                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {item.quantity}
+                                      </p>
                                     </div>
                                     <p className="font-medium text-gray-900 dark:text-white">
                                       {typeof item.price === "string"
-                                        ? `$${parseFloat(item.price || "0").toFixed(2)}`
+                                        ? `$${parseFloat(
+                                            item.price || "0"
+                                          ).toFixed(2)}`
                                         : typeof item.amount === "number"
                                         ? `$${item.amount.toFixed(2)}`
                                         : "$0.00"}
@@ -278,17 +355,25 @@ export default function QuotationsPage() {
                             {/* Summary */}
                             <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                               <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                                <span className="text-gray-600 dark:text-gray-400">
+                                  Subtotal
+                                </span>
                                 <span className="font-medium">
-                                  ${(subtotal).toFixed(2)}
+                                  ${subtotal.toFixed(2)}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-600 dark:text-gray-400">Delivery Fee</span>
-                                <span className="font-medium">${(quotation.delivery_fee || 0).toFixed(2)}</span>
+                                <span className="text-gray-600 dark:text-gray-400">
+                                  Delivery Fee
+                                </span>
+                                <span className="font-medium">
+                                  ${(quotation.delivery_fee || 0).toFixed(2)}
+                                </span>
                               </div>
                               <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
-                                <span className="font-semibold text-gray-900 dark:text-white">Total</span>
+                                <span className="font-semibold text-gray-900 dark:text-white">
+                                  Total
+                                </span>
                                 <span className="font-semibold text-gray-900 dark:text-white">
                                   ${total.toFixed(2)}
                                 </span>
@@ -297,9 +382,12 @@ export default function QuotationsPage() {
 
                             {/* Delivery Info */}
                             <div>
-                              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Delivery Information</h3>
+                              <h3 className="font-medium text-gray-900 dark:text-white mb-2">
+                                Delivery Information
+                              </h3>
                               <p className="text-gray-600 dark:text-gray-400">
-                                Estimated delivery time: {quotation.estimated_delivery}
+                                Estimated delivery time:{" "}
+                                {quotation.estimated_delivery}
                               </p>
                             </div>
 
@@ -337,10 +425,10 @@ export default function QuotationsPage() {
                   </div>
                 </CardContent>
               </Card>
-            )
+            );
           })
         )}
       </div>
     </>
-  )
+  );
 }
