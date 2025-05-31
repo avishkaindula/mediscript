@@ -26,13 +26,16 @@ export async function GET(request: Request) {
     }
   }
 
+  // Redirect based on redirectTo if present
+  if (redirectTo) {
+    return NextResponse.redirect(`${origin}${redirectTo}`);
+  }
+
   // Redirect based on userRole
   if (userRole === "pharmacy") {
     return NextResponse.redirect(`${origin}/pharmacy/dashboard`);
   } else if (userRole === "user") {
     return NextResponse.redirect(`${origin}/user/dashboard`);
-  } else if (redirectTo) {
-    return NextResponse.redirect(`${origin}${redirectTo}`);
   }
 
   // URL to redirect to after sign up process completes
