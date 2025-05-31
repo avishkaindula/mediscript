@@ -13,6 +13,7 @@ const PUBLIC_PATHS = [
   "/how-it-works",
   "/privacy",
   "/terms",
+  "/",
 ];
 
 export const updateSession = async (request: NextRequest) => {
@@ -57,7 +58,9 @@ export const updateSession = async (request: NextRequest) => {
     const {
       data: { session },
     } = await supabase.auth.getSession();
+
     let userRole;
+
     if (session?.access_token) {
       const jwt = jwtDecode(session.access_token) as any;
       userRole = jwt.user_role;
