@@ -27,6 +27,15 @@ export default function UploadPrescription() {
   const [phone, setPhone] = useState("");
   const supabase = createClient();
 
+  const timeSlotMap: Record<string, string> = {
+    "8-10": "8:00 AM - 10:00 AM",
+    "10-12": "10:00 AM - 12:00 PM",
+    "12-14": "12:00 PM - 2:00 PM",
+    "14-16": "2:00 PM - 4:00 PM",
+    "16-18": "4:00 PM - 6:00 PM",
+    "18-20": "6:00 PM - 8:00 PM",
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (uploadedFiles.length === 0) {
@@ -57,7 +66,8 @@ export default function UploadPrescription() {
           note,
           address,
           preferred_date: preferredDate,
-          preferred_time_slot: preferredTimeSlot,
+          preferred_time_slot:
+            timeSlotMap[preferredTimeSlot] || preferredTimeSlot,
           phone,
           files,
         },

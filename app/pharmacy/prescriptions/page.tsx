@@ -36,18 +36,17 @@ export default function PrescriptionsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
-
+  const supabase = createClient();
   // Modal and gallery state (single modal for all prescriptions)
   const [modalOpen, setModalOpen] = useState(false);
   const [modalPrescription, setModalPrescription] =
     useState<Prescription | null>(null);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState(0);
-  const loadingImages = useRef(false);
+  const [loadingImages, setLoadingImages] = useState(false);
 
   useEffect(() => {
     const fetchPrescriptions = async () => {
-      const supabase = createClient();
       const { data, error } = await supabase
         .from("prescriptions")
         .select("*, quotes(*)")
@@ -98,8 +97,7 @@ export default function PrescriptionsPage() {
     setModalOpen(true);
     setImageUrls([]);
     setSelectedImage(0);
-    loadingImages.current = true;
-    const supabase = createClient();
+    setLoadingImages(true);
     let files: { path?: string; filename?: string }[] = [];
     if (Array.isArray(prescription.files)) {
       files = prescription.files as { path?: string; filename?: string }[];
@@ -108,6 +106,7 @@ export default function PrescriptionsPage() {
     const urls: string[] = [];
     for (const file of files) {
       try {
+        console.log(file.path);
         const { data } = await supabase.storage
           .from("prescriptions")
           .createSignedUrl(file.path!, 60 * 60);
@@ -120,9 +119,10 @@ export default function PrescriptionsPage() {
         urls.push("");
       }
     }
+    console.log(urls);
     setImageUrls(urls);
     setSelectedImage(0);
-    loadingImages.current = false;
+    setLoadingImages(false);
   };
 
   // Close modal and reset state
@@ -131,7 +131,7 @@ export default function PrescriptionsPage() {
     setModalPrescription(null);
     setImageUrls([]);
     setSelectedImage(0);
-    loadingImages.current = false;
+    setLoadingImages(false);
   };
 
   return (
@@ -311,7 +311,16 @@ export default function PrescriptionsPage() {
                 <h3 className="font-semibold mb-4">Prescription Images</h3>
                 <div className="space-y-4">
                   {/* Main image view */}
-                  {imageUrls.length > 0 && imageUrls[selectedImage] ? (
+                  {loadingImages ? (
+                    <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-400 border-t-transparent mb-2"></div>
+                        <p className="text-sm text-gray-500">
+                          Loading images...
+                        </p>
+                      </div>
+                    </div>
+                  ) : imageUrls.length > 0 && imageUrls[selectedImage] ? (
                     <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
                       <img
                         src={imageUrls[selectedImage]}
