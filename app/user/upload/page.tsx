@@ -8,27 +8,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import ImageUploader from "@/components/ui/image-dropzone";
+import { createClient } from "@/utils/supabase/client";
 
 export default function UploadPrescription() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  // Store uploaded file info for DB and preview
   const [uploadedFiles, setUploadedFiles] = useState<
     { path?: string; filename?: string; previewUrl?: string }[]
   >([]);
   const [isUploading, setIsUploading] = useState(false);
-
-  // No upload logic here! Only receive uploaded file info from dropzone
+  const [note, setNote] = useState("");
+  const [address, setAddress] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [preferredTimeSlot, setPreferredTimeSlot] = useState("");
+  const [phone, setPhone] = useState("");
+  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,21 +39,58 @@ export default function UploadPrescription() {
     }
     setLoading(true);
     try {
-      // TODO: Save uploadedFiles (already uploaded) and other form data to prescriptions table here
-      toast({
-        title: "Prescription uploaded successfully!",
-        description:
-          "Pharmacies will review your prescription and send quotations soon.",
-      });
+      const files = uploadedFiles.map((f) => ({
+        filename: f.filename,
+        path: f.path,
+      }));
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Not authenticated", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+      const { error } = await supabase.from("prescriptions").insert([
+        {
+          user_id: user.id,
+          note,
+          address,
+          preferred_date: preferredDate,
+          preferred_time_slot: preferredTimeSlot,
+          phone,
+          files,
+        },
+      ]);
       setLoading(false);
-      router.push("/user/dashboard");
+      if (error) {
+        toast({
+          title: "Upload failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Prescription uploaded successfully!",
+          description:
+            "Pharmacies will review your prescription and send quotations soon.",
+        });
+        // Reset form
+        setNote("");
+        setAddress("");
+        setPreferredDate("");
+        setPreferredTimeSlot("");
+        setPhone("");
+        setUploadedFiles([]);
+        router.push("/user/dashboard");
+      }
     } catch (err: any) {
+      setLoading(false);
       toast({
         title: "Upload failed",
         description: err.message,
         variant: "destructive",
       });
-      setLoading(false);
     }
   };
 
@@ -99,6 +133,9 @@ export default function UploadPrescription() {
               <Label htmlFor="note">Notes (Optional)</Label>
               <Textarea
                 id="note"
+                name="note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
                 placeholder="Any special instructions, urgency, or additional information..."
                 className="mt-1"
               />
@@ -118,6 +155,9 @@ export default function UploadPrescription() {
                 <Label htmlFor="address">Delivery Address</Label>
                 <Textarea
                   id="address"
+                  name="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
                   placeholder="Enter your complete delivery address..."
                   required
                   className="mt-1"
@@ -128,7 +168,10 @@ export default function UploadPrescription() {
                   <Label htmlFor="date">Preferred Date</Label>
                   <Input
                     id="date"
+                    name="preferred_date"
                     type="date"
+                    value={preferredDate}
+                    onChange={(e) => setPreferredDate(e.target.value)}
                     required
                     min={new Date().toISOString().split("T")[0]}
                     className="mt-1"
@@ -136,26 +179,32 @@ export default function UploadPrescription() {
                 </div>
                 <div>
                   <Label htmlFor="time">Preferred Time Slot</Label>
-                  <Select required>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select time slot" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="8-10">8:00 AM - 10:00 AM</SelectItem>
-                      <SelectItem value="10-12">10:00 AM - 12:00 PM</SelectItem>
-                      <SelectItem value="12-14">12:00 PM - 2:00 PM</SelectItem>
-                      <SelectItem value="14-16">2:00 PM - 4:00 PM</SelectItem>
-                      <SelectItem value="16-18">4:00 PM - 6:00 PM</SelectItem>
-                      <SelectItem value="18-20">6:00 PM - 8:00 PM</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="time"
+                    name="preferred_time_slot"
+                    value={preferredTimeSlot}
+                    onChange={(e) => setPreferredTimeSlot(e.target.value)}
+                    required
+                    className="mt-1 w-full rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2"
+                  >
+                    <option value="">Select time slot</option>
+                    <option value="8-10">8:00 AM - 10:00 AM</option>
+                    <option value="10-12">10:00 AM - 12:00 PM</option>
+                    <option value="12-14">12:00 PM - 2:00 PM</option>
+                    <option value="14-16">2:00 PM - 4:00 PM</option>
+                    <option value="16-18">4:00 PM - 6:00 PM</option>
+                    <option value="18-20">6:00 PM - 8:00 PM</option>
+                  </select>
                 </div>
               </div>
               <div>
                 <Label htmlFor="phone">Contact Number</Label>
                 <Input
                   id="phone"
+                  name="phone"
                   type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   placeholder="Your phone number for delivery coordination"
                   required
                   className="mt-1"

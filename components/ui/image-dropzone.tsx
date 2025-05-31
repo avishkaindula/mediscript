@@ -39,7 +39,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       onUploadStateChange(true);
 
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         onUploadStateChange(false);
         return;
@@ -50,8 +52,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         const filename = `${uuidv4()}.${ext}`;
         const path = `private/${user.id}/${filename}`;
         // Get signed upload URL
-        const { data: uploadData, error: uploadError } = await supabase
-          .storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
           .from("prescriptions")
           .createSignedUploadUrl(path);
         if (uploadError || !uploadData) {
@@ -76,10 +77,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           continue;
         }
         // Get signed download URL for preview
-        const { data: previewData, error: previewError } = await supabase
-          .storage
-          .from("prescriptions")
-          .createSignedUrl(path, 60 * 60); // 1 hour
+        const { data: previewData, error: previewError } =
+          await supabase.storage
+            .from("prescriptions")
+            .createSignedUrl(path, 60 * 60); // 1 hour
         if (previewError || !previewData) {
           setUploadedFiles((prev) => {
             const idx = prev.findIndex((f) => f.uploading);
