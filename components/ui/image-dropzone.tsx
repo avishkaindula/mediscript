@@ -6,9 +6,10 @@ import { v4 as uuidv4 } from "uuid";
 import { createClient } from "@/utils/supabase/client";
 
 interface UploadedFileInfo {
-  path: string;
-  filename: string;
-  previewUrl: string;
+  path?: string;
+  filename?: string;
+  previewUrl?: string;
+  uploading?: boolean;
 }
 
 interface ImageUploaderProps {
@@ -29,23 +30,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     new Set()
   );
 
-  const supabase = createClient();
-
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const newFiles = acceptedFiles.slice(0, maxImages - uploadedFiles.length);
-      const startIndex = uploadedFiles.length;
-      const newUploadingIndices = new Set(uploadingIndices);
-      for (let i = startIndex; i < startIndex + newFiles.length; i++) {
-        newUploadingIndices.add(i);
-      }
-      setUploadingIndices(newUploadingIndices);
+      // Add placeholders for uploading
+      const uploadingPlaceholders = newFiles.map(() => ({ uploading: true }));
+      setUploadedFiles((prev) => [...prev, ...uploadingPlaceholders]);
       onUploadStateChange(true);
 
-      const newUploaded: UploadedFileInfo[] = [];
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         onUploadStateChange(false);
         return;
@@ -56,10 +50,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         const filename = `${uuidv4()}.${ext}`;
         const path = `private/${user.id}/${filename}`;
         // Get signed upload URL
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { data: uploadData, error: uploadError } = await supabase
+          .storage
           .from("prescriptions")
           .createSignedUploadUrl(path);
         if (uploadError || !uploadData) {
+          // Remove placeholder if upload fails
+          setUploadedFiles((prev) => {
+            const idx = prev.findIndex((f) => f.uploading);
+            return prev.filter((_, j) => j !== idx);
+          });
           continue;
         }
         // Upload file
@@ -69,38 +69,41 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           headers: { "Content-Type": file.type },
         });
         if (!uploadRes.ok) {
+          setUploadedFiles((prev) => {
+            const idx = prev.findIndex((f) => f.uploading);
+            return prev.filter((_, j) => j !== idx);
+          });
           continue;
         }
         // Get signed download URL for preview
-        const { data: previewData, error: previewError } =
-          await supabase.storage
-            .from("prescriptions")
-            .createSignedUrl(path, 60 * 60); // 1 hour
+        const { data: previewData, error: previewError } = await supabase
+          .storage
+          .from("prescriptions")
+          .createSignedUrl(path, 60 * 60); // 1 hour
         if (previewError || !previewData) {
+          setUploadedFiles((prev) => {
+            const idx = prev.findIndex((f) => f.uploading);
+            return prev.filter((_, j) => j !== idx);
+          });
           continue;
         }
-        newUploaded.push({ path, filename, previewUrl: previewData.signedUrl });
+        // Replace the first uploading placeholder with the real file info
+        setUploadedFiles((prev) => {
+          const idx = prev.findIndex((f) => f.uploading);
+          if (idx === -1) return prev;
+          const newArr = [...prev];
+          newArr[idx] = { path, filename, previewUrl: previewData.signedUrl };
+          return newArr;
+        });
       }
-      const allUploaded = [...uploadedFiles, ...newUploaded];
-      setUploadedFiles(allUploaded);
-      onImagesChange(allUploaded);
-      setUploadingIndices(new Set());
       onUploadStateChange(false);
     },
-    [
-      uploadedFiles,
-      maxImages,
-      onImagesChange,
-      onUploadStateChange,
-      uploadingIndices,
-      supabase,
-    ]
+    [uploadedFiles, maxImages, onImagesChange, onUploadStateChange]
   );
 
   const removeImage = (index: number) => {
-    const newFiles = uploadedFiles.filter((_, i) => i !== index);
-    setUploadedFiles(newFiles);
-    onImagesChange(newFiles);
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+    onImagesChange(uploadedFiles.filter((_, i) => i !== index));
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -108,6 +111,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     accept: { "image/*": [] },
     maxFiles: maxImages,
   });
+
+  useEffect(() => {
+    // Only pass fully uploaded files to parent
+    onImagesChange(uploadedFiles.filter((f) => !f.uploading));
+  }, [uploadedFiles, onImagesChange]);
 
   return (
     <div className="flex p-1 mt-2">
@@ -117,7 +125,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             key={index}
             className="relative cursor-pointer min-h-[100px] min-w-[100px]"
           >
-            {isUploading && uploadingIndices.has(index) ? (
+            {file.uploading ? (
               <div className="absolute inset-0 z-10 bg-black/50 flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-[3px] border-white border-t-transparent"></div>
               </div>

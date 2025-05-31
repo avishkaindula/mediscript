@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,9 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, ImageIcon } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
-import { createClient } from "@/utils/supabase/client";
 import ImageUploader from "@/components/ui/image-dropzone";
 
 export default function UploadPrescription() {
@@ -27,7 +24,7 @@ export default function UploadPrescription() {
   const [loading, setLoading] = useState(false);
   // Store uploaded file info for DB and preview
   const [uploadedFiles, setUploadedFiles] = useState<
-    { path: string; filename: string; previewUrl: string }[]
+    { path?: string; filename?: string; previewUrl?: string }[]
   >([]);
   const [isUploading, setIsUploading] = useState(false);
 
