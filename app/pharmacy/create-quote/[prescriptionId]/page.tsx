@@ -20,7 +20,6 @@ import { Plus, X, Send, FileText, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import type { Tables } from "@/utils/supabase/types";
-import nodemailer from "nodemailer";
 import jsPDF from "jspdf";
 
 type Prescription = Tables<"prescriptions">;
@@ -259,37 +258,6 @@ export default function CreateQuotePage() {
     const pdfBlob = doc.output("blob");
     const pdfBuffer = await pdfBlob.arrayBuffer();
 
-    // Send email with nodemailer
-    if (patientEmail) {
-      const transporter = nodemailer.createTransport({
-        // Configure your SMTP transport here
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
-        secure: false,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-      await transporter.sendMail({
-        from: process.env.SMTP_FROM || "no-reply@example.com",
-        to: patientEmail,
-        subject: "Your Quotation is Ready",
-        text: `Dear ${
-          patientName || "User"
-        },\n\nA new quotation has been created for your prescription.\n\nYou can view, accept, or reject your quotation at: ${userQuotationsLink}\n\nThank you!\n\n--\nPharmacy Team`,
-        html: `<p>Dear ${
-          patientName || "User"
-        },</p><p>A new quotation has been created for your prescription.</p><p><a href="${userQuotationsLink}">View, accept, or reject your quotation</a></p><p>Thank you!<br/>Pharmacy Team</p>`,
-        attachments: [
-          {
-            filename: "quotation.pdf",
-            content: Buffer.from(pdfBuffer),
-            contentType: "application/pdf",
-          },
-        ],
-      });
-    }
     toast({
       title: "Quotation sent successfully!",
       description: `Quotation for ${
