@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import type { Tables } from "@/utils/supabase/types";
+import { useRef } from "react";
 
 type Prescription = Tables<"prescriptions"> & {
   quotes: Tables<"quotes">[];
@@ -43,6 +44,11 @@ export default function PharmacyDashboard() {
     { drug: "", quantity: "", price: "" },
   ]);
   const [quotes, setQuotes] = useState<Tables<"quotes">[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalPrescription, setModalPrescription] = useState<Prescription | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [loadingImages, setLoadingImages] = useState(false);
 
   useEffect(() => {
     const fetchPrescriptions = async () => {
@@ -163,6 +169,59 @@ export default function PharmacyDashboard() {
   const pendingQuotes = quotes.filter((q) => q.status === "pending").length;
   const completedQuotes = quotes.filter((q) => q.status === "accepted").length;
   const rejectedQuotes = quotes.filter((q) => q.status === "rejected").length;
+
+  // Helper to format Sri Lankan phone numbers (e.g., +94713768901 -> +94 71 376 8901)
+  function formatPhoneNumber(phone: string) {
+    const match = phone.match(/^[+]?94(\d{2})(\d{3})(\d{4})$/);
+    if (match) {
+      return `+94 ${match[1]} ${match[2]} ${match[3]}`;
+    }
+    return phone;
+  }
+
+  // Open modal for a prescription and load its images
+  const handleOpenModal = async (prescription: Prescription) => {
+    setModalPrescription(prescription);
+    setModalOpen(true);
+    setImageUrls([]);
+    setSelectedImage(0);
+    setLoadingImages(true);
+    let files: { path?: string; filename?: string }[] = [];
+    if (Array.isArray(prescription.files)) {
+      files = prescription.files as { path?: string; filename?: string }[];
+    }
+    files = files.filter((f) => f.path);
+    const urls: string[] = [];
+    for (const file of files) {
+      try {
+        // If you want logs, keep this:
+        console.log(file.path);
+        const { data } = await supabase.storage
+          .from("prescriptions")
+          .createSignedUrl(file.path!, 60 * 60);
+        if (data?.signedUrl) {
+          urls.push(data.signedUrl);
+        } else {
+          urls.push("");
+        }
+      } catch (e) {
+        urls.push("");
+      }
+    }
+    console.log(urls);
+    setImageUrls(urls);
+    setSelectedImage(0);
+    setLoadingImages(false);
+  };
+
+  // Close modal and reset state
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setModalPrescription(null);
+    setImageUrls([]);
+    setSelectedImage(0);
+    setLoadingImages(false);
+  };
 
   return (
     <>
@@ -312,192 +371,15 @@ export default function PharmacyDashboard() {
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full sm:w-auto"
-                          >
-                            <Eye className="w-4 h-4 mr-2" />
-                            View
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
-                          <DialogHeader>
-                            <DialogTitle>
-                              Prescription Details -{" "}
-                              {prescription.patientProfile?.name ||
-                                "Unknown Patient"}
-                            </DialogTitle>
-                            <DialogDescription>
-                              Review prescription and create quotation
-                            </DialogDescription>
-                          </DialogHeader>
-
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Prescription Images */}
-                            <div>
-                              <h3 className="font-semibold mb-4">
-                                Prescription Images
-                              </h3>
-                              <div className="space-y-4">
-                                <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                                  <div className="text-center">
-                                    <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                                    <p className="text-sm text-gray-500">
-                                      Main Prescription
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="grid grid-cols-4 gap-2">
-                                  {Array.isArray(prescription.files) &&
-                                    prescription.files.map((_, i) => (
-                                      <div
-                                        key={i}
-                                        className="aspect-square bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
-                                      >
-                                        <FileText className="w-6 h-6 text-gray-400" />
-                                      </div>
-                                    ))}
-                                </div>
-                              </div>
-
-                              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <h4 className="font-medium mb-2">
-                                  Patient Notes
-                                </h4>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  {prescription.note}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Quotation Form */}
-                            <div>
-                              <h3 className="font-semibold mb-4">
-                                Create Quotation
-                              </h3>
-                              <div className="space-y-4">
-                                {quotationItems.map((item, index) => (
-                                  <div
-                                    key={index}
-                                    className="grid grid-cols-12 gap-2 items-end"
-                                  >
-                                    <div className="col-span-5">
-                                      <Label
-                                        htmlFor={`drug-${index}`}
-                                        className="text-xs"
-                                      >
-                                        Drug
-                                      </Label>
-                                      <Input
-                                        id={`drug-${index}`}
-                                        placeholder="Medicine name"
-                                        value={item.drug}
-                                        onChange={(e) =>
-                                          updateQuotationItem(
-                                            index,
-                                            "drug",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="text-sm"
-                                      />
-                                    </div>
-                                    <div className="col-span-3">
-                                      <Label
-                                        htmlFor={`quantity-${index}`}
-                                        className="text-xs"
-                                      >
-                                        Quantity
-                                      </Label>
-                                      <Input
-                                        id={`quantity-${index}`}
-                                        placeholder="Qty"
-                                        value={item.quantity}
-                                        onChange={(e) =>
-                                          updateQuotationItem(
-                                            index,
-                                            "quantity",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="text-sm"
-                                      />
-                                    </div>
-                                    <div className="col-span-3">
-                                      <Label
-                                        htmlFor={`price-${index}`}
-                                        className="text-xs"
-                                      >
-                                        Amount
-                                      </Label>
-                                      <Input
-                                        id={`price-${index}`}
-                                        type="number"
-                                        step="0.01"
-                                        placeholder="0.00"
-                                        value={item.price}
-                                        onChange={(e) =>
-                                          updateQuotationItem(
-                                            index,
-                                            "price",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="text-sm"
-                                      />
-                                    </div>
-                                    <div className="col-span-1">
-                                      {quotationItems.length > 1 && (
-                                        <Button
-                                          type="button"
-                                          variant="outline"
-                                          size="icon"
-                                          onClick={() =>
-                                            removeQuotationItem(index)
-                                          }
-                                          className="h-8 w-8"
-                                        >
-                                          ×
-                                        </Button>
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
-
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  onClick={addQuotationItem}
-                                  className="w-full"
-                                >
-                                  <Plus className="w-4 h-4 mr-2" />
-                                  Add Item
-                                </Button>
-
-                                <div className="border-t pt-4">
-                                  <div className="flex justify-between items-center text-lg font-semibold">
-                                    <span>Total:</span>
-                                    <span>${calculateTotal()}</span>
-                                  </div>
-                                </div>
-
-                                <Link
-                                  href={`/pharmacy/create-quote/${prescription.id}`}
-                                >
-                                  <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
-                                    <Send className="w-4 h-4 mr-2" />
-                                    Send Quotation
-                                  </Button>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full sm:w-auto"
+                        onClick={() => handleOpenModal(prescription)}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </Button>
                       {prescription.quotes.length === 0 &&
                         (prescription.status ?? "pending") === "pending" && (
                           <Link
@@ -520,6 +402,130 @@ export default function PharmacyDashboard() {
           </div>
         )}
       </div>
+      {/* Modal for prescription details (copied/adapted from prescriptions page) */}
+      <Dialog
+        open={modalOpen}
+        onOpenChange={(open) => {
+          if (!open) handleCloseModal();
+        }}
+      >
+        <DialogContent
+          className="max-w-4xl max-h-[80vh] overflow-auto"
+          onInteractOutside={handleCloseModal}
+          onEscapeKeyDown={handleCloseModal}
+        >
+          <DialogHeader>
+            <DialogTitle>Prescription Details</DialogTitle>
+            <DialogDescription>Review prescription details</DialogDescription>
+          </DialogHeader>
+          {modalPrescription && (
+            <div className="space-y-6">
+              {/* Prescription Images */}
+              <div>
+                <h3 className="font-semibold mb-4">Prescription Images</h3>
+                <div className="space-y-4">
+                  {/* Main image view */}
+                  {loadingImages ? (
+                    <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-400 border-t-transparent mb-2"></div>
+                        <p className="text-sm text-gray-500">
+                          Loading images...
+                        </p>
+                      </div>
+                    </div>
+                  ) : imageUrls.length > 0 && imageUrls[selectedImage] ? (
+                    <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                      <img
+                        src={imageUrls[selectedImage]}
+                        alt={`Prescription image ${selectedImage + 1}`}
+                        className="object-contain max-h-[350px] w-full h-full"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500">No Images</p>
+                      </div>
+                    </div>
+                  )}
+                  {/* Thumbnails */}
+                  {imageUrls.length > 1 && (
+                    <div className="flex gap-2 mt-2 justify-center">
+                      {imageUrls.map((url, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          className={`border rounded-lg overflow-hidden w-16 h-16 flex items-center justify-center ${
+                            selectedImage === idx
+                              ? "ring-2 ring-blue-500"
+                              : "border-gray-300 dark:border-gray-700"
+                          }`}
+                          onClick={() => setSelectedImage(idx)}
+                        >
+                          {url ? (
+                            <img
+                              src={url}
+                              alt={`Thumbnail ${idx + 1}`}
+                              className="object-cover w-full h-full"
+                            />
+                          ) : (
+                            <FileText className="w-6 h-6 text-gray-400" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              {/* Patient Information */}
+              <div>
+                <h3 className="font-semibold mb-4">Patient Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Name</p>
+                    <p className="font-medium">{modalPrescription.patientProfile?.name || "Unknown Patient"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="font-medium">{formatPhoneNumber(modalPrescription.phone)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Delivery Address</p>
+                    <p className="font-medium">{modalPrescription.address}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Delivery Time</p>
+                    <p className="font-medium">{modalPrescription.preferred_time_slot}</p>
+                  </div>
+                </div>
+              </div>
+              {/* Notes */}
+              <div>
+                <h3 className="font-semibold mb-2">Patient Notes</h3>
+                <p className="text-gray-600 dark:text-gray-400 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  {modalPrescription.note}
+                </p>
+              </div>
+              {/* Actions */}
+              <div className="flex justify-end space-x-3">
+                {modalPrescription.quotes.length === 0 && (
+                  <Link href={`/pharmacy/create-quote/${modalPrescription.id}`}>
+                    <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+                      <Send className="w-4 h-4 mr-2" />
+                      Create Quotation
+                    </Button>
+                  </Link>
+                )}
+                {modalPrescription.quotes.length > 0 && (
+                  <Button variant="outline">View Quotation</Button>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
